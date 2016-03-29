@@ -17,55 +17,62 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class Dashboard extends AppCompatActivity {
+
+    JSONObject[] dash_data = {};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         init();
-
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    sendPost();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     public void init() {
         TableLayout ll = (TableLayout) findViewById(R.id.table_view);
 
-        for (int i = 0; i < 2; i++) {
+        try {
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        dash_data = sendPost();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
 
-            TableRow row = new TableRow(this);
-            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-            row.setLayoutParams(lp);
-            CheckBox checkBox = new CheckBox(this);
+            for (int i = 0; i < dash_data.length; i++) {
 
-            //ImageButton addBtn = new ImageButton(this);
-            //addBtn.setImageResource(R.drawable.add);
-            TextView tv = new TextView(this);
-            //ImageButton minusBtn = new ImageButton(this);
-            //minusBtn.setImageResource(R.drawable.minus);
-            TextView qty = new TextView(this);
-            checkBox.setText("hello");
-            qty.setText("10");
-            row.addView(checkBox);
-            //row.addView(minusBtn);
-            row.addView(qty);
-            //row.addView(addBtn);
-            ll.addView(row, i);
+                TableRow row = new TableRow(this);
+                TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+                row.setLayoutParams(lp);
+                CheckBox checkBox = new CheckBox(this);
+
+                //ImageButton addBtn = new ImageButton(this);
+                //addBtn.setImageResource(R.drawable.add);
+                TextView tv = new TextView(this);
+                //ImageButton minusBtn = new ImageButton(this);
+                //minusBtn.setImageResource(R.drawable.minus);
+                TextView qty = new TextView(this);
+                checkBox.setText(dash_data[i].get("lift").toString());
+                qty.setText(dash_data[i].get("weight").toString());
+                row.addView(checkBox);
+                //row.addView(minusBtn);
+                row.addView(qty);
+                //row.addView(addBtn);
+                ll.addView(row, i);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private void sendPost() throws Exception {
+    private JSONObject[] sendPost() throws Exception {
 
         String url = "https://loguapp.com/swift6.php";
         URL obj = new URL(url);
@@ -76,7 +83,7 @@ public class Dashboard extends AppCompatActivity {
         con.setRequestProperty("accept", "application/json");
         con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-        String urlParameters = "username=brettalcox";
+        String urlParameters = "username=test";
 
         // Send post request
         con.setDoOutput(true);
@@ -103,13 +110,18 @@ public class Dashboard extends AppCompatActivity {
         //print result
         //System.out.println(response.toString());
 
-        JSONObject json_data = new JSONObject(response.toString());
-        //JSONArray json_data = new JSONArray(response);
+        //JSONObject json_data = new JSONObject(response.toString());
+        JSONArray json_data = new JSONArray(new String(response.toString()));
+        JSONObject object = new JSONObject();
 
-        for (int i = 0; i < json_data.length(); i++) {
-            //System.out.println(json_data.getSt);
-            System.out.println(json_data.get("lift"));
+        JSONObject[] user_data = new JSONObject[json_data.length()];
+
+        for(int i=0; i < json_data.length(); i++)
+        {
+            object = json_data.getJSONObject(i);
+            user_data[i] = object;
         }
+        return user_data;
     }
 }
 
