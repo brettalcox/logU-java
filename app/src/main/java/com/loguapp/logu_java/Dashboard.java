@@ -1,5 +1,6 @@
 package com.loguapp.logu_java;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +24,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class Dashboard extends AppCompatActivity {
 
-    JSONObject[] dash_data = {};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,95 +32,104 @@ public class Dashboard extends AppCompatActivity {
     }
 
     public void init() {
-        TableLayout ll = (TableLayout) findViewById(R.id.table_view);
-
         try {
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        dash_data = sendPost();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-
-            for (int i = 0; i < dash_data.length; i++) {
-
-                TableRow row = new TableRow(this);
-                TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-                row.setLayoutParams(lp);
-                CheckBox checkBox = new CheckBox(this);
-
-                //ImageButton addBtn = new ImageButton(this);
-                //addBtn.setImageResource(R.drawable.add);
-                TextView tv = new TextView(this);
-                //ImageButton minusBtn = new ImageButton(this);
-                //minusBtn.setImageResource(R.drawable.minus);
-                TextView qty = new TextView(this);
-                checkBox.setText(dash_data[i].get("lift").toString());
-                qty.setText(dash_data[i].get("weight").toString());
-                row.addView(checkBox);
-                //row.addView(minusBtn);
-                row.addView(qty);
-                //row.addView(addBtn);
-                ll.addView(row, i);
-            }
+            new LiftData().execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private JSONObject[] sendPost() throws Exception {
+    public class LiftData extends AsyncTask<Void, Void, JSONObject[]> {
+        @Override
+        protected JSONObject[] doInBackground(Void... params) {
 
-        String url = "https://loguapp.com/swift6.php";
-        URL obj = new URL(url);
-        HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+            JSONObject[] dash_data = {};
 
-        //add reuqest header
-        con.setRequestMethod("POST");
-        con.setRequestProperty("accept", "application/json");
-        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+            try {
+                String url = "https://loguapp.com/swift6.php";
+                URL obj = new URL(url);
+                HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
-        String urlParameters = "username=test";
+                //add reuqest header
+                con.setRequestMethod("POST");
+                con.setRequestProperty("accept", "application/json");
+                con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-        // Send post request
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(urlParameters);
-        wr.flush();
-        wr.close();
+                String urlParameters = "username=brettalcox";
 
-        int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'POST' request to URL : " + url);
-        System.out.println("Post parameters : " + urlParameters);
-        System.out.println("Response Code : " + responseCode);
+                // Send post request
+                con.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                wr.writeBytes(urlParameters);
+                wr.flush();
+                wr.close();
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
+                int responseCode = con.getResponseCode();
+                System.out.println("\nSending 'POST' request to URL : " + url);
+                System.out.println("Post parameters : " + urlParameters);
+                System.out.println("Response Code : " + responseCode);
 
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                //print result
+                //System.out.println(response.toString());
+
+                //JSONObject json_data = new JSONObject(response.toString());
+                JSONArray json_data = new JSONArray(new String(response.toString()));
+                JSONObject object = new JSONObject();
+
+                JSONObject[] user_data = new JSONObject[json_data.length()];
+
+                for(int i=0; i < json_data.length(); i++)
+                {
+                    object = json_data.getJSONObject(i);
+                    user_data[i] = object;
+                }
+                dash_data = user_data;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return dash_data;
         }
-        in.close();
 
-        //print result
-        //System.out.println(response.toString());
+        @Override
+        protected void onPostExecute(JSONObject[] user_data) {
 
-        //JSONObject json_data = new JSONObject(response.toString());
-        JSONArray json_data = new JSONArray(new String(response.toString()));
-        JSONObject object = new JSONObject();
+            System.out.println(user_data.length + " is the length");
+            TableLayout ll = (TableLayout) findViewById(R.id.table_view);
 
-        JSONObject[] user_data = new JSONObject[json_data.length()];
+            try {
+                for (int i = 0; i < user_data.length; i++) {
 
-        for(int i=0; i < json_data.length(); i++)
-        {
-            object = json_data.getJSONObject(i);
-            user_data[i] = object;
+                    TableRow row = new TableRow(Dashboard.this);
+                    TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+                    row.setLayoutParams(lp);
+
+                    TextView liftData = new TextView(Dashboard.this);
+                    TextView setRepData = new TextView(Dashboard.this);
+                    TextView weightData = new TextView(Dashboard.this);
+                    liftData.setText(user_data[i].get("lift").toString());
+                    setRepData.setText(user_data[i].get("sets").toString() + "x" + user_data[i].get("reps").toString());
+                    weightData.setText(user_data[i].get("weight").toString());
+                    row.addView(liftData);
+                    row.addView(setRepData);
+                    row.addView(weightData);
+                    //row.addView(addBtn);
+                    ll.addView(row, i);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        return user_data;
     }
 }
 
