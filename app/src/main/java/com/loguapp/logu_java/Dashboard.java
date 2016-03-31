@@ -1,11 +1,17 @@
 package com.loguapp.logu_java;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TabHost;
+import android.widget.TextView;
+
+import junit.framework.Test;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,12 +21,9 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-
 import javax.net.ssl.HttpsURLConnection;
 
-public class Dashboard extends AppCompatActivity {
+public class Dashboard extends AppCompatActivity implements View.OnClickListener {
 
 
     ListView lview;
@@ -38,6 +41,39 @@ public class Dashboard extends AppCompatActivity {
             new LiftData().execute();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.button: {
+                // do something for button 1 click
+                System.out.println("Community page");
+                Intent i = new Intent(getBaseContext(), CommunityActivity.class);
+                startActivity(i);
+                break;
+            }
+
+            case R.id.button2: {
+                System.out.println("User Stats page");
+                Intent i = new Intent(getBaseContext(), UserStatsActivity.class);
+                startActivity(i);
+                break;
+            }
+            case R.id.button3: {
+                System.out.println("Settings page");
+                Intent i = new Intent(getBaseContext(), SettingsActivity.class);
+                startActivity(i);
+                break;
+            }
+            case R.id.button4: {
+                System.out.println("Log lift page");
+                Intent i = new Intent(getBaseContext(), LogLiftActivity.class);
+                startActivity(i);
+                break;
+            }
         }
     }
 
