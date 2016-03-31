@@ -1,17 +1,11 @@
 package com.loguapp.logu_java;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TabHost;
-import android.widget.TextView;
-
-import junit.framework.Test;
 
 import org.json.JSONException;
 import org.json.JSONObject;
