@@ -1,28 +1,30 @@
 package com.loguapp.logu_java;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class Dashboard extends AppCompatActivity {
+
+
+    ListView lview;
+    ListViewAdapter lviewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +52,12 @@ public class Dashboard extends AppCompatActivity {
                 URL obj = new URL(url);
                 HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
-                //add reuqest header
                 con.setRequestMethod("POST");
                 con.setRequestProperty("accept", "application/json");
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
                 String urlParameters = "username=brettalcox";
 
-                // Send post request
                 con.setDoOutput(true);
                 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
                 wr.writeBytes(urlParameters);
@@ -79,10 +79,6 @@ public class Dashboard extends AppCompatActivity {
                 }
                 in.close();
 
-                //print result
-                //System.out.println(response.toString());
-
-                //JSONObject json_data = new JSONObject(response.toString());
                 JSONArray json_data = new JSONArray(new String(response.toString()));
                 JSONObject object = new JSONObject();
 
@@ -104,31 +100,28 @@ public class Dashboard extends AppCompatActivity {
         @Override
         protected void onPostExecute(JSONObject[] user_data) {
 
-            System.out.println(user_data.length + " is the length");
-            TableLayout ll = (TableLayout) findViewById(R.id.table_view);
+            String[] dates = new String[user_data.length];
+            String[] lifts = new String[user_data.length];
+            String[] set_reps = new String[user_data.length];
+            String[] weights = new String[user_data.length];
 
-            try {
-                for (int i = 0; i < user_data.length; i++) {
-
-                    TableRow row = new TableRow(Dashboard.this);
-                    TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-                    row.setLayoutParams(lp);
-
-                    TextView liftData = new TextView(Dashboard.this);
-                    TextView setRepData = new TextView(Dashboard.this);
-                    TextView weightData = new TextView(Dashboard.this);
-                    liftData.setText(user_data[i].get("lift").toString());
-                    setRepData.setText(user_data[i].get("sets").toString() + "x" + user_data[i].get("reps").toString());
-                    weightData.setText(user_data[i].get("weight").toString());
-                    row.addView(liftData);
-                    row.addView(setRepData);
-                    row.addView(weightData);
-                    //row.addView(addBtn);
-                    ll.addView(row, i);
+            for (int i = 0; i < user_data.length; ++i) {
+                try {
+                    dates[i] = user_data[i].get("date").toString();
+                    lifts[i] = user_data[i].get("lift").toString();
+                    set_reps[i] = user_data[i].get("sets").toString() + "x" + user_data[i].get("reps").toString();
+                    weights[i] = user_data[i].get("weight").toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+
+            lview = (ListView) findViewById(R.id.listView);
+            lviewAdapter = new ListViewAdapter(Dashboard.this, dates, lifts, set_reps, weights);
+
+            System.out.println("adapter => "+lviewAdapter.getCount());
+
+            lview.setAdapter(lviewAdapter);
         }
     }
 }
