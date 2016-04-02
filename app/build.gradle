@@ -25,4 +25,9 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'org.apache.httpcomponents:httpclient-android:4.3.3'
     compile 'com.github.dkharrat.nexusdialog:nexusdialog:0.3.0'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
+}
+
+repositories {
+    maven { url "https://jitpack.io" }
 }
