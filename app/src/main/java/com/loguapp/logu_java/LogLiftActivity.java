@@ -1,36 +1,19 @@
 package com.loguapp.logu_java;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.github.dkharrat.nexusdialog.FormActivity;
 import com.github.dkharrat.nexusdialog.controllers.DatePickerController;
 import com.github.dkharrat.nexusdialog.controllers.EditTextController;
 import com.github.dkharrat.nexusdialog.controllers.FormSectionController;
 import com.github.dkharrat.nexusdialog.controllers.SelectionController;
-import com.github.dkharrat.nexusdialog.controllers.ValueController;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -70,9 +53,9 @@ public class LogLiftActivity extends FormActivity {
                 SimpleDateFormat logDateFormat = new SimpleDateFormat("M/d/yyyy");
                 try {
 
-                    if (getModel().getValue("date") == null || getModel().getValue("lift").toString() == null ||
-                            getModel().getValue("sets").toString() == null || getModel().getValue("reps").toString() == null ||
-                            getModel().getValue("weight").toString() == null) {
+                    if (getModel().getValue("date") == null || getModel().getValue("lift") == null ||
+                            getModel().getValue("sets") == null || getModel().getValue("reps") == null ||
+                            getModel().getValue("weight") == null) {
                         new AlertDialog.Builder(LogLiftActivity.this)
                                 .setTitle("Log Lift Failed!")
                                 .setMessage("Fill out all of the required fields.")
@@ -87,12 +70,21 @@ public class LogLiftActivity extends FormActivity {
                         Date date = initialDateFormat.parse(getModel().getValue("date").toString());
                         System.out.println(logDateFormat.format(date));
 
+                        if (getModel().getValue("intensity") == null) {
+                            getModel().setValue("intensity", "0");
+                        }
+
+                        if (getModel().getValue("notes") == null) {
+                            getModel().setValue("notes", " ");
+                        }
+
                         String queryParam = "name=brettalcox" + "&date=" + logDateFormat.format(date).toString() + "&lift=" +
                                 getModel().getValue("lift").toString() + "&sets=" + getModel().getValue("sets").toString() +
                                 "&reps=" + getModel().getValue("reps").toString() + "&weight=" + getModel().getValue("weight").toString() +
                                 "&intensity=" + getModel().getValue("intensity").toString() + "&notes=" + getModel().getValue("notes").toString();
                         System.out.println(queryParam);
                         new LiftData().execute(queryParam);
+                        finish();
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();

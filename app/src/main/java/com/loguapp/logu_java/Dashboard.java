@@ -30,6 +30,12 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         init();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new LiftData().execute(); //need to create singleton for tracking whether or not to update
+    }
+
     public void init() {
         try {
             new LiftData().execute();
