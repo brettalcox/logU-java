@@ -12,5 +12,8 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        Singleton singletonTest = Singleton.getInstance();
+        System.out.println(singletonTest.getTest());
     }
 }

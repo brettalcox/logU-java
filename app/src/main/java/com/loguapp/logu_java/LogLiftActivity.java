@@ -27,6 +27,8 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class LogLiftActivity extends FormActivity {
 
+    Singleton singleton = Singleton.getInstance();
+
     @Override protected void initForm() {
         setTitle("Register Account");
         setContentView(R.layout.form_activity);
@@ -84,6 +86,7 @@ public class LogLiftActivity extends FormActivity {
                                 "&intensity=" + getModel().getValue("intensity").toString() + "&notes=" + getModel().getValue("notes").toString();
                         System.out.println(queryParam);
                         new LiftData().execute(queryParam);
+                        singleton.setShouldUpdateDash(true);
                         finish();
                     }
                 } catch (ParseException e) {

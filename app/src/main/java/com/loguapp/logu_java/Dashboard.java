@@ -19,7 +19,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class Dashboard extends AppCompatActivity implements View.OnClickListener {
 
-
+    Singleton singleton = Singleton.getInstance();
     ListView lview;
     ListViewAdapter lviewAdapter;
 
@@ -27,13 +27,21 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
         init();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        new LiftData().execute(); //need to create singleton for tracking whether or not to update
+
+        if (singleton.getShouldUpdateDash()) {
+            new LiftData().execute(); //need to create singleton for tracking whether or not to update
+            singleton.setShouldUpdateDash(false);
+            System.out.println("I'm updating because the singleton told me to");
+        } else {
+            System.out.println("I'm not updating because the singleton told me not to");
+        }
     }
 
     public void init() {
