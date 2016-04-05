@@ -2,6 +2,7 @@ package com.loguapp.logu_java;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.InputType;
 import android.view.View;
@@ -27,15 +28,12 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class LogLiftActivity extends FormActivity {
 
-    Singleton singleton = Singleton.getInstance();
-
     @Override protected void initForm() {
         setTitle("Register Account");
         setContentView(R.layout.form_activity);
         List<String> lifts = Arrays.asList("Squat", "Pause Squat", "Front Squat", "Box Squat", "Hack Squat", "Zerker Squat", "Pin Squat", "Good Mornings", "Bench", "Close Grip Bench", "Incline Bench", "Decline Bench", "Pause Bench", "Floor Press", "Pin Press", "Deadlift", "Deficit Deadlift", "Pause Deadlift", "Snatch Grip Deadlift", "Straight Leg Deadlift", "Romanian Deadlift", "Overhead Press", "Sots Press", "Pullups", "Dips", "Push Ups", "Crunches", "Sit-ups", "General Ab Work", "Bent Over Rows", "T-Bar Rows", "Kroc Rows", "Upright Rows", "Cable Upright Rows", "Cable Seated Rows", "Straight Bar Bicep Curls", "EZ Bar Bicep Curls", "Barbell Bicep Curls", "Hammer Curls", "Cable Curls", "Chest Fly", "Cable Standing Fly", "Lat Pulldown", "Shoulder Fly", "Lateral Raise", "Shoulder Shrug", "Tricep Extension", "Tricep Pushdown", "Dumbbell Bench", "Dumbbell Incline Press", "Dumbbell Press", "Skullcrushers", "21's", "Leg Press", "Leg Extension", "Leg Curl", "Standing Calf Raise", "Seated Calf Raise", "Snatch", "Clean and Jerk", "Power Clean", "Power Snatch", "Hang Clean", "Hang Snatch", "Snatch Pulls", "Clean Pulls");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/yyyy");
-        //dateFormat.setLenient(false);
 
         final FormSectionController section1 = new FormSectionController(this, "New Lift");
 
@@ -86,7 +84,10 @@ public class LogLiftActivity extends FormActivity {
                                 "&intensity=" + getModel().getValue("intensity").toString() + "&notes=" + getModel().getValue("notes").toString();
                         System.out.println(queryParam);
                         new LiftData().execute(queryParam);
-                        singleton.setShouldUpdateDash(true);
+
+                        Intent intent = new Intent(LogLiftActivity.this, Dashboard.class);
+                        intent.putExtra("shouldUpdateDash", true);
+                        setResult(RESULT_OK, intent);
                         finish();
                     }
                 } catch (ParseException e) {

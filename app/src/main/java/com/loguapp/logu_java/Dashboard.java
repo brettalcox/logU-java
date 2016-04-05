@@ -21,9 +21,10 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class Dashboard extends AppCompatActivity implements View.OnClickListener {
 
-    Singleton singleton = Singleton.getInstance();
     ListView lview;
     ListViewAdapter lviewAdapter;
+
+    static final int DASH_UPDATE_RESULT = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +38,6 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
     protected void onResume() {
         super.onResume();
 
-        if (singleton.getShouldUpdateDash()) {
-            new LiftData().execute(); //need to create singleton for tracking whether or not to update
-            singleton.setShouldUpdateDash(false);
-            System.out.println("I'm updating because the singleton told me to");
-        } else {
-            System.out.println("I'm not updating because the singleton told me not to");
-        }
     }
 
     public void init() {
@@ -51,6 +45,16 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
             new LiftData().execute();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == DASH_UPDATE_RESULT) {
+            if (resultCode == RESULT_OK) {
+                System.out.println("Passing back intent extras worked");
+                new LiftData().execute();
+            }
         }
     }
 
@@ -81,7 +85,8 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
             case R.id.button4: {
                 System.out.println("Log lift page");
                 Intent i = new Intent(getBaseContext(), LogLiftActivity.class);
-                startActivity(i);
+                startActivityForResult(i, 0);
+                //startActivity(i);
                 break;
             }
         }
