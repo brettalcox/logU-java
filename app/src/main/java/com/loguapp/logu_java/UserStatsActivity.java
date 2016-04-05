@@ -2,21 +2,18 @@ package com.loguapp.logu_java;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.ListView;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.RadarChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +24,7 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -36,6 +34,11 @@ import javax.net.ssl.HttpsURLConnection;
 public class UserStatsActivity extends Activity {
 
     private RadarChart chart;
+    private JSONObject[] targetedMuscle;
+    private JSONObject[] wilkScore;
+    private JSONObject[] repAverage;
+    private JSONObject[] wilksRank;
+    private JSONObject[] avgFreq;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,56 @@ public class UserStatsActivity extends Activity {
 
     public void init() {
 
+        formatChart();
+
+        try {
+            targetedMuscle = new LiftData().execute("https://loguapp.com/radar_graph.php").get();
+            setTargetedMuscle(targetedMuscle);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            wilkScore = new LiftData().execute("https://loguapp.com/wilks_score.php").get();
+            setWilkScore(wilkScore);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            repAverage = new LiftData().execute("https://loguapp.com/rep_average.php").get();
+            setRepAverage(repAverage);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            wilksRank = new LiftData().execute("https://loguapp.com/swift_wilks_percentile.php").get();
+            setWilksRank(wilksRank);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            avgFreq = new LiftData().execute("https://loguapp.com/average_frequency.php").get();
+            setAvgFreq(avgFreq);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void formatChart() {
         chart = (RadarChart) findViewById(R.id.chart);
 
         chart.setDescription("");
@@ -73,9 +126,6 @@ public class UserStatsActivity extends Activity {
         yAxis.setTextSize(0f);
         yAxis.setAxisMinValue(0f);
         yAxis.setDrawLabels(false);
-
-        new LiftData().execute();
-
     }
 
     public void setData(String[] xValues, String[] yValues) {
@@ -114,15 +164,104 @@ public class UserStatsActivity extends Activity {
         chart.invalidate();
     }
 
-    public class LiftData extends AsyncTask<Void, Void, JSONObject[]> {
+    public void setTargetedMuscle(JSONObject[] data) {
+        String[] muscles = new String[data.length];
+        String[] values = new String[data.length];
+
+        for (int i = 0; i < data.length; ++i) {
+            try {
+                muscles[i] = data[i].get("category").toString();
+                values[i] = data[i].get("weighted").toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        setData(muscles, values);
+    }
+
+    public void setWilkScore(JSONObject[] data) {
+        String[] values = new String[data.length];
+
+        for (int i = 0; i < data.length; ++i) {
+            try {
+                values[i] = data[i].get("wilks_coeff").toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        TextView wilkLabel = (TextView) findViewById(R.id.wilkScoreLabel);
+        wilkLabel.setText(values[0]);
+    }
+
+    public void setRepAverage(JSONObject[] data) {
+        String[] avg_reps = new String[data.length];
+        String[] reps = new String[data.length];
+        String[] sets = new String[data.length];
+        String[] lifts = new String[data.length];
+        String[] favLift = new String[data.length];
+
+        for (int i = 0; i < data.length; ++i) {
+            try {
+                avg_reps[i] = data[i].get("average_reps").toString();
+                reps[i] = data[i].get("total_reps").toString();
+                sets[i] = data[i].get("total_sets").toString();
+                lifts[i] = data[i].get("total_lifts").toString();
+                favLift[i] = data[i].get("count").toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        TextView avgRepLabel = (TextView) findViewById(R.id.avgRepsLabel);
+        TextView repLabel = (TextView) findViewById(R.id.totalRepsLabel);
+        TextView setLabel = (TextView) findViewById(R.id.totalSetsLabel);
+        TextView liftLabel = (TextView) findViewById(R.id.liftCountLabel);
+        TextView favoriteLift = (TextView) findViewById(R.id.favLiftLabel);
+
+        avgRepLabel.setText(avg_reps[0]);
+        repLabel.setText(reps[0]);
+        setLabel.setText(sets[0]);
+        liftLabel.setText(lifts[0]);
+        favoriteLift.setText(favLift[0]);
+    }
+
+    public void setWilksRank(JSONObject[] data) {
+        String[] values = new String[data.length];
+
+        for (int i = 0; i < data.length; ++i) {
+            try {
+                values[i] = data[i].get("rank").toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        TextView rankLabel = (TextView) findViewById(R.id.wilksRankLabel);
+        rankLabel.setText(values[0]);
+    }
+
+    public void setAvgFreq(JSONObject[] data) {
+        String[] values = new String[data.length];
+
+        for (int i = 0; i < data.length; ++i) {
+            try {
+                values[i] = data[i].get("average_freq").toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        TextView avgFreqLabel = (TextView) findViewById(R.id.avgFreqLabel);
+        avgFreqLabel.setText(values[0]);
+    }
+
+    public class LiftData extends AsyncTask<String, Void, JSONObject[]> {
         @Override
-        protected JSONObject[] doInBackground(Void... params) {
+        protected JSONObject[] doInBackground(String... url) {
 
             JSONObject[] dash_data = {};
 
             try {
-                String url = "https://loguapp.com/radar_graph.php";
-                URL obj = new URL(url);
+                URL obj = new URL(url[0]);
                 HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
                 con.setRequestMethod("POST");
@@ -168,24 +307,6 @@ public class UserStatsActivity extends Activity {
             }
 
             return dash_data;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject[] user_data) {
-
-            String[] muscles = new String[user_data.length];
-            String[] values = new String[user_data.length];
-
-            for (int i = 0; i < user_data.length; ++i) {
-                try {
-                    muscles[i] = user_data[i].get("category").toString();
-                    values[i] = user_data[i].get("weighted").toString();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            setData(muscles, values);
         }
     }
 }
