@@ -85,7 +85,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         switch (v.getId()) {
             case R.id.button: {
                 System.out.println("Community page");
-                Intent i = new Intent(getBaseContext(), CommunityActivity.class);
+                Intent i = new Intent(getBaseContext(), LoginActivity.class);
                 startActivity(i);
                 break;
             }
