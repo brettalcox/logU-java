@@ -43,6 +43,8 @@ public class UserStatsActivity extends Activity {
     private JSONObject[] avgFreq;
 
     private String[] statsCache = new String[9];
+    private String[] muscleCat;
+    private String[] weightedVal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +57,8 @@ public class UserStatsActivity extends Activity {
     public void onBackPressed() {
         Intent intent = new Intent(UserStatsActivity.this, Dashboard.class);
         intent.putExtra("statsCache", statsCache);
-
-        for (int i = 0; i > statsCache.length; i++) {
-            System.out.println(statsCache[i]);
-        }
+        intent.putExtra("muscleCat", muscleCat);
+        intent.putExtra("weightedVal", weightedVal);
 
         setResult(RESULT_OK, intent);
         finish();
@@ -72,30 +72,7 @@ public class UserStatsActivity extends Activity {
         if (extras.getBoolean("shouldUpdate")) {
             makeNetworkCalls();
         } else {
-            TextView wilkLabel = (TextView) findViewById(R.id.wilkScoreLabel);
-            TextView rankLabel = (TextView) findViewById(R.id.wilksRankLabel);
-            TextView liftLabel = (TextView) findViewById(R.id.liftCountLabel);
-            TextView setLabel = (TextView) findViewById(R.id.totalSetsLabel);
-            TextView repLabel = (TextView) findViewById(R.id.totalRepsLabel);
-            TextView avgRepLabel = (TextView) findViewById(R.id.avgRepsLabel);
-            TextView avgFreqLabel = (TextView) findViewById(R.id.avgFreqLabel);
-            TextView favoriteLift = (TextView) findViewById(R.id.favLiftLabel);
-
-            if (extras.getStringArray("statsCache") != null) {
-
-                String[] statsData = extras.getStringArray("statsCache");
-
-                wilkLabel.setText(statsData[0]);
-                rankLabel.setText(statsData[2]);
-                liftLabel.setText(statsData[3]);
-                setLabel.setText(statsData[4]);
-                repLabel.setText(statsData[5]);
-                avgRepLabel.setText(statsData[6]);
-                avgFreqLabel.setText(statsData[7]);
-                favoriteLift.setText(statsData[8]);
-
-                statsCache = statsData;
-            }
+            useCachedValues(extras);
         }
     }
 
@@ -203,6 +180,40 @@ public class UserStatsActivity extends Activity {
         }
     }
 
+    public void useCachedValues(Bundle extras) {
+        TextView wilkLabel = (TextView) findViewById(R.id.wilkScoreLabel);
+        TextView rankLabel = (TextView) findViewById(R.id.wilksRankLabel);
+        TextView liftLabel = (TextView) findViewById(R.id.liftCountLabel);
+        TextView setLabel = (TextView) findViewById(R.id.totalSetsLabel);
+        TextView repLabel = (TextView) findViewById(R.id.totalRepsLabel);
+        TextView avgRepLabel = (TextView) findViewById(R.id.avgRepsLabel);
+        TextView avgFreqLabel = (TextView) findViewById(R.id.avgFreqLabel);
+        TextView favoriteLift = (TextView) findViewById(R.id.favLiftLabel);
+
+        if (extras.getStringArray("statsCache") != null) {
+
+            String[] statsData = extras.getStringArray("statsCache");
+
+            wilkLabel.setText(statsData[0]);
+            rankLabel.setText(statsData[2]);
+            liftLabel.setText(statsData[3]);
+            setLabel.setText(statsData[4]);
+            repLabel.setText(statsData[5]);
+            avgRepLabel.setText(statsData[6]);
+            avgFreqLabel.setText(statsData[7]);
+            favoriteLift.setText(statsData[8]);
+
+            statsCache = statsData;
+        }
+
+        if (extras.getStringArray("muscleCat") != null && extras.getStringArray("weightedVal") != null) {
+            muscleCat = extras.getStringArray("muscleCat");
+            weightedVal = extras.getStringArray("weightedVal");
+
+            setData(muscleCat, weightedVal);
+        }
+    }
+
     public void setTargetedMuscle(JSONObject[] data) {
         String[] muscles = new String[data.length];
         String[] values = new String[data.length];
@@ -215,6 +226,10 @@ public class UserStatsActivity extends Activity {
                 e.printStackTrace();
             }
         }
+
+        muscleCat = muscles;
+        weightedVal = values;
+
         setData(muscles, values);
     }
 

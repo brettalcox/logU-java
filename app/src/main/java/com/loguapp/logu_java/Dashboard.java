@@ -26,8 +26,11 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
 
     static final int DASH_UPDATE_RESULT = 0;
     static final int STATS_UPDATE_RESULT = 1;
+
     private Boolean shouldUpdateStats = true;
     private String[] statsCache;
+    private String[] muscleCat;
+    private String[] weightedVal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,16 +69,10 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         if (requestCode == STATS_UPDATE_RESULT) {
             if (resultCode == RESULT_OK) {
                 statsCache = data.getStringArrayExtra("statsCache");
+                muscleCat = data.getStringArrayExtra("muscleCat");
+                weightedVal = data.getStringArrayExtra("weightedVal");
                 shouldUpdateStats = false;
                 System.out.println("Passing back cached stats worked");
-
-                for (int i = 0; i > statsCache.length; i++) {
-                    System.out.println(statsCache[i]);
-                }
-
-                for (int i = 0; i > statsCache.length; i++) {
-                    System.out.println("butts");
-                }
             } else {
                 System.out.println("Passing back cache didn't work");
             }
@@ -96,13 +93,9 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
                 System.out.println("User Stats page");
                 Intent i = new Intent(getBaseContext(), UserStatsActivity.class);
                 i.putExtra("statsCache", statsCache);
+                i.putExtra("muscleCat", muscleCat);
+                i.putExtra("weightedVal", weightedVal);
                 i.putExtra("shouldUpdate", shouldUpdateStats);
-
-                if (statsCache != null) {
-                    for (int j = 0; j > statsCache.length; j++) {
-                        System.out.println(statsCache[j]);
-                    }
-                }
 
                 startActivityForResult(i, STATS_UPDATE_RESULT);
                 break;
