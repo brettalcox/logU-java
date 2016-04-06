@@ -25,6 +25,9 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
     ListViewAdapter lviewAdapter;
 
     static final int DASH_UPDATE_RESULT = 0;
+    static final int STATS_UPDATE_RESULT = 1;
+    private Boolean shouldUpdateStats = true;
+    private String[] statsCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,27 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
             if (resultCode == RESULT_OK) {
                 System.out.println("Passing back intent extras worked");
                 new LiftData().execute();
+                shouldUpdateStats = true;
+            } else {
+                //User didn't log a lift
+            }
+        }
+
+        if (requestCode == STATS_UPDATE_RESULT) {
+            if (resultCode == RESULT_OK) {
+                statsCache = data.getStringArrayExtra("statsCache");
+                shouldUpdateStats = false;
+                System.out.println("Passing back cached stats worked");
+
+                for (int i = 0; i > statsCache.length; i++) {
+                    System.out.println(statsCache[i]);
+                }
+
+                for (int i = 0; i > statsCache.length; i++) {
+                    System.out.println("butts");
+                }
+            } else {
+                System.out.println("Passing back cache didn't work");
             }
         }
     }
@@ -63,17 +87,24 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
 
         switch (v.getId()) {
             case R.id.button: {
-                // do something for button 1 click
                 System.out.println("Community page");
                 Intent i = new Intent(getBaseContext(), CommunityActivity.class);
                 startActivity(i);
                 break;
             }
-
             case R.id.button2: {
                 System.out.println("User Stats page");
                 Intent i = new Intent(getBaseContext(), UserStatsActivity.class);
-                startActivity(i);
+                i.putExtra("statsCache", statsCache);
+                i.putExtra("shouldUpdate", shouldUpdateStats);
+
+                if (statsCache != null) {
+                    for (int j = 0; j > statsCache.length; j++) {
+                        System.out.println(statsCache[j]);
+                    }
+                }
+
+                startActivityForResult(i, STATS_UPDATE_RESULT);
                 break;
             }
             case R.id.button3: {
@@ -85,8 +116,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
             case R.id.button4: {
                 System.out.println("Log lift page");
                 Intent i = new Intent(getBaseContext(), LogLiftActivity.class);
-                startActivityForResult(i, 0);
-                //startActivity(i);
+                startActivityForResult(i, DASH_UPDATE_RESULT);
                 break;
             }
         }

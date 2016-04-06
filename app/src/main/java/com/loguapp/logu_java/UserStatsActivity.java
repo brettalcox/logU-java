@@ -1,6 +1,7 @@
 package com.loguapp.logu_java;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -40,6 +42,8 @@ public class UserStatsActivity extends Activity {
     private JSONObject[] wilksRank;
     private JSONObject[] avgFreq;
 
+    private String[] statsCache = new String[9];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,10 +51,112 @@ public class UserStatsActivity extends Activity {
         init();
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(UserStatsActivity.this, Dashboard.class);
+        intent.putExtra("statsCache", statsCache);
+
+        for (int i = 0; i > statsCache.length; i++) {
+            System.out.println(statsCache[i]);
+        }
+
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
     public void init() {
 
         formatChart();
 
+        Bundle extras = getIntent().getExtras();
+        if (extras.getBoolean("shouldUpdate")) {
+            makeNetworkCalls();
+        } else {
+            TextView wilkLabel = (TextView) findViewById(R.id.wilkScoreLabel);
+            TextView rankLabel = (TextView) findViewById(R.id.wilksRankLabel);
+            TextView liftLabel = (TextView) findViewById(R.id.liftCountLabel);
+            TextView setLabel = (TextView) findViewById(R.id.totalSetsLabel);
+            TextView repLabel = (TextView) findViewById(R.id.totalRepsLabel);
+            TextView avgRepLabel = (TextView) findViewById(R.id.avgRepsLabel);
+            TextView avgFreqLabel = (TextView) findViewById(R.id.avgFreqLabel);
+            TextView favoriteLift = (TextView) findViewById(R.id.favLiftLabel);
+
+            if (extras.getStringArray("statsCache") != null) {
+
+                String[] statsData = extras.getStringArray("statsCache");
+
+                wilkLabel.setText(statsData[0]);
+                rankLabel.setText(statsData[2]);
+                liftLabel.setText(statsData[3]);
+                setLabel.setText(statsData[4]);
+                repLabel.setText(statsData[5]);
+                avgRepLabel.setText(statsData[6]);
+                avgFreqLabel.setText(statsData[7]);
+                favoriteLift.setText(statsData[8]);
+
+                statsCache = statsData;
+            }
+        }
+    }
+
+    public void formatChart() {
+        chart = (RadarChart) findViewById(R.id.chart);
+
+        chart.setDescription("");
+
+        chart.setWebLineWidth(1.5f);
+        chart.setWebLineWidthInner(0.75f);
+        chart.setWebAlpha(100);
+
+        chart.animateXY(
+                1400, 1400,
+                Easing.EasingOption.EaseInOutQuad,
+                Easing.EasingOption.EaseInOutQuad);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setTextSize(9f);
+
+
+        YAxis yAxis = chart.getYAxis();
+        yAxis.setLabelCount(5, false);
+        yAxis.setTextSize(0f);
+        yAxis.setAxisMinValue(0f);
+        yAxis.setDrawLabels(false);
+    }
+
+    public void setData(String[] xValues, String[] yValues) {
+
+        ArrayList<Entry> yVals1 = new ArrayList<Entry>();
+
+        for (int i = 0; i < yValues.length; i++) {
+            yVals1.add(new Entry((float) (Float.valueOf(yValues[i])), i));
+        }
+
+        ArrayList<String> xVals = new ArrayList<String>();
+
+        for (int i = 0; i < xValues.length; i++)
+            xVals.add(xValues[i % xValues.length]);
+
+        RadarDataSet set1 = new RadarDataSet(yVals1, "");
+        set1.setColor(Color.rgb(0, 152, 255));
+        set1.setFillColor(Color.rgb(0, 152, 255));
+        set1.setDrawFilled(true);
+        set1.setLineWidth(2f);
+
+
+        ArrayList<IRadarDataSet> sets = new ArrayList<IRadarDataSet>();
+        sets.add(set1);
+
+        RadarData data = new RadarData(xVals, sets);
+        data.setValueTextSize(8f);
+        data.setDrawValues(false);
+
+        chart.setData(data);
+        chart.getLegend().setEnabled(false);
+        chart.invalidate();
+    }
+
+    private void makeNetworkCalls() {
         try {
             targetedMuscle = new LiftData().execute("https://loguapp.com/radar_graph.php").get();
             setTargetedMuscle(targetedMuscle);
@@ -95,73 +201,6 @@ public class UserStatsActivity extends Activity {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
-    }
-
-    public void formatChart() {
-        chart = (RadarChart) findViewById(R.id.chart);
-
-        chart.setDescription("");
-
-        chart.setWebLineWidth(1.5f);
-        chart.setWebLineWidthInner(0.75f);
-        chart.setWebAlpha(100);
-
-        // create a custom MarkerView (extend MarkerView) and specify the layout
-        // to use for it
-
-        // set the marker to the chart
-
-        chart.animateXY(
-                1400, 1400,
-                Easing.EasingOption.EaseInOutQuad,
-                Easing.EasingOption.EaseInOutQuad);
-
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setTextSize(9f);
-
-
-        YAxis yAxis = chart.getYAxis();
-        yAxis.setLabelCount(5, false);
-        yAxis.setTextSize(0f);
-        yAxis.setAxisMinValue(0f);
-        yAxis.setDrawLabels(false);
-    }
-
-    public void setData(String[] xValues, String[] yValues) {
-
-        ArrayList<Entry> yVals1 = new ArrayList<Entry>();
-
-        // IMPORTANT: In a PieChart, no values (Entry) should have the same
-        // xIndex (even if from different DataSets), since no values can be
-        // drawn above each other.
-
-        for (int i = 0; i < yValues.length; i++) {
-            yVals1.add(new Entry((float) (Float.valueOf(yValues[i])), i));
-        }
-
-        ArrayList<String> xVals = new ArrayList<String>();
-
-        for (int i = 0; i < xValues.length; i++)
-            xVals.add(xValues[i % xValues.length]);
-
-        RadarDataSet set1 = new RadarDataSet(yVals1, "");
-        set1.setColor(Color.rgb(0, 152, 255));
-        set1.setFillColor(Color.rgb(0, 152, 255));
-        set1.setDrawFilled(true);
-        set1.setLineWidth(2f);
-
-
-        ArrayList<IRadarDataSet> sets = new ArrayList<IRadarDataSet>();
-        sets.add(set1);
-
-        RadarData data = new RadarData(xVals, sets);
-        data.setValueTextSize(8f);
-        data.setDrawValues(false);
-
-        chart.setData(data);
-        chart.getLegend().setEnabled(false);
-        chart.invalidate();
     }
 
     public void setTargetedMuscle(JSONObject[] data) {
@@ -185,6 +224,7 @@ public class UserStatsActivity extends Activity {
         for (int i = 0; i < data.length; ++i) {
             try {
                 values[i] = data[i].get("wilks_coeff").toString();
+                statsCache[0] = data[i].get("wilks_coeff").toString();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -207,6 +247,13 @@ public class UserStatsActivity extends Activity {
                 sets[i] = data[i].get("total_sets").toString();
                 lifts[i] = data[i].get("total_lifts").toString();
                 favLift[i] = data[i].get("count").toString();
+
+                statsCache[6] = data[i].get("average_reps").toString();
+                statsCache[5] = data[i].get("total_reps").toString();
+                statsCache[4] = data[i].get("total_sets").toString();
+                statsCache[3] = data[i].get("total_lifts").toString();
+                statsCache[8] = data[i].get("count").toString();
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -230,6 +277,7 @@ public class UserStatsActivity extends Activity {
         for (int i = 0; i < data.length; ++i) {
             try {
                 values[i] = data[i].get("rank").toString();
+                statsCache[2] = data[i].get("rank").toString();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -245,6 +293,7 @@ public class UserStatsActivity extends Activity {
         for (int i = 0; i < data.length; ++i) {
             try {
                 values[i] = data[i].get("average_freq").toString();
+                statsCache[7] = data[i].get("average_freq").toString();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
