@@ -1,11 +1,27 @@
 package com.loguapp.logu_java;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ListView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by BA042808 on 4/5/2016.
@@ -16,12 +32,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        System.out.println(preferences.getString("test", "DEFAULT"));
-        editor.putString("test", "shared prefs works");
-        editor.apply();
     }
 
     @Override
@@ -29,13 +39,125 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
         switch (v.getId()) {
             case R.id.loginButton: {
-                System.out.println("Logging in.");
-                Intent i = new Intent(getBaseContext(), Dashboard.class);
-                startActivity(i);
+
+                EditText username = (EditText) findViewById(R.id.usernameField);
+                EditText password = (EditText) findViewById(R.id.passwordField);
+
+                if (username.getText() == null || password.getText() == null) {
+                    System.out.println("You didn't fill out all fields!");
+                    loginFieldsError();
+                } else {
+                    System.out.println("Attemping login.");
+
+                    //SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+                    //SharedPreferences.Editor editor = preferences.edit();
+                    //editor.putString("username", username.getText().toString());
+                    Prefs prefs = new Prefs();
+                    prefs.setMyStringPref(this, username.getText().toString());
+                    //editor.apply();
+
+                    String loginQuery = "username=" + username.getText().toString() + "&password=" + password.getText().toString();
+                    new UserLogin().execute(loginQuery);
+                }
+
                 break;
             }
             case R.id.signUpButton: {
 
+            }
+        }
+    }
+
+    public void loginError() {
+        new AlertDialog.Builder(LoginActivity.this)
+                .setTitle("Login Failed!")
+                .setMessage("Username/Password Incorrect")
+                .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    public void loginFieldsError() {
+        new AlertDialog.Builder(LoginActivity.this)
+                .setTitle("Login Failed!")
+                .setMessage("Fill out both fields.")
+                .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    public class UserLogin extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+
+            String stringResponse = "";
+
+            try {
+                String url = "https://loguapp.com/swift_login.php";
+                URL obj = new URL(url);
+                HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+                con.setRequestMethod("POST");
+                con.setRequestProperty("accept", "application/json");
+                con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+
+                String urlParameters = params[0];
+
+                con.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                wr.writeBytes(urlParameters);
+                wr.flush();
+                wr.close();
+
+                int responseCode = con.getResponseCode();
+                System.out.println("\nSending 'POST' request to URL : " + url);
+                System.out.println("Post parameters : " + urlParameters);
+                System.out.println("Response Code : " + responseCode);
+
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                stringResponse = response.toString();
+                stringResponse = stringResponse.trim();
+                System.out.println(stringResponse);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return stringResponse;
+        }
+
+        @Override
+        protected void onPostExecute(String loginResponse) {
+            System.out.println("the value trying to login " + loginResponse + " the length is: " + loginResponse.length());
+            int loginCode = Integer.parseInt(loginResponse);
+            if (loginCode == 1) {
+
+                SharedPreferences preferences = LoginActivity.this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putInt("isLoggedIn", 1);
+                editor.apply();
+
+                Intent i = new Intent(getBaseContext(), Dashboard.class);
+                startActivity(i);
+            } else {
+                loginError();
             }
         }
     }

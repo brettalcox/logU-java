@@ -1,8 +1,10 @@
 package com.loguapp.logu_java;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.text.InputType;
 import android.view.View;
@@ -36,6 +38,8 @@ public class LogLiftActivity extends FormActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/yyyy");
 
         final FormSectionController section1 = new FormSectionController(this, "New Lift");
+
+        final Prefs preferences = new Prefs();
 
         section1.addElement(new DatePickerController(this, "date", "Date", true, dateFormat));
         section1.addElement(new SelectionController(this, "lift", "Lift", true, "Select Lift", lifts, true));
@@ -78,7 +82,9 @@ public class LogLiftActivity extends FormActivity {
                             getModel().setValue("notes", " ");
                         }
 
-                        String queryParam = "name=brettalcox" + "&date=" + logDateFormat.format(date).toString() + "&lift=" +
+                        String username = preferences.getMyStringPref(LogLiftActivity.this);
+
+                        String queryParam = "name=" + username + "&date=" + logDateFormat.format(date).toString() + "&lift=" +
                                 getModel().getValue("lift").toString() + "&sets=" + getModel().getValue("sets").toString() +
                                 "&reps=" + getModel().getValue("reps").toString() + "&weight=" + getModel().getValue("weight").toString() +
                                 "&intensity=" + getModel().getValue("intensity").toString() + "&notes=" + getModel().getValue("notes").toString();

@@ -1,7 +1,9 @@
 package com.loguapp.logu_java;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,6 +47,8 @@ public class UserStatsActivity extends Activity {
     private String[] statsCache = new String[9];
     private String[] muscleCat;
     private String[] weightedVal;
+
+    final Prefs preferences = new Prefs();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -332,7 +336,9 @@ public class UserStatsActivity extends Activity {
                 con.setRequestProperty("accept", "application/json");
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-                String urlParameters = "username=brettalcox";
+                String username = preferences.getMyStringPref(UserStatsActivity.this);
+
+                String urlParameters = "username=" + username;
 
                 con.setDoOutput(true);
                 DataOutputStream wr = new DataOutputStream(con.getOutputStream());

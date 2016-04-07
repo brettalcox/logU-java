@@ -85,7 +85,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         switch (v.getId()) {
             case R.id.button: {
                 System.out.println("Community page");
-                Intent i = new Intent(getBaseContext(), LoginActivity.class);
+                Intent i = new Intent(getBaseContext(), CommunityActivity.class);
                 startActivity(i);
                 break;
             }
@@ -120,6 +120,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         protected JSONObject[] doInBackground(Void... params) {
 
             JSONObject[] dash_data = {};
+            Prefs preferences = new Prefs();
 
             try {
                 String url = "https://loguapp.com/swift6.php";
@@ -130,7 +131,10 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
                 con.setRequestProperty("accept", "application/json");
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-                String urlParameters = "username=brettalcox";
+                String username = preferences.getMyStringPref(Dashboard.this);
+                System.out.println(username);
+
+                String urlParameters = "username=" + username;
 
                 con.setDoOutput(true);
                 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
