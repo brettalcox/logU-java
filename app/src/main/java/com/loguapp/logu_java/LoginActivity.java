@@ -10,11 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ListView;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -43,18 +38,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 EditText username = (EditText) findViewById(R.id.usernameField);
                 EditText password = (EditText) findViewById(R.id.passwordField);
 
-                if (username.getText() == null || password.getText() == null) {
+                if (username.getText().toString().trim().length() <= 0 || password.getText().toString().trim().length() <= 0) {
                     System.out.println("You didn't fill out all fields!");
                     loginFieldsError();
                 } else {
                     System.out.println("Attemping login.");
 
-                    //SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
-                    //SharedPreferences.Editor editor = preferences.edit();
-                    //editor.putString("username", username.getText().toString());
                     Prefs prefs = new Prefs();
                     prefs.setMyStringPref(this, username.getText().toString());
-                    //editor.apply();
 
                     String loginQuery = "username=" + username.getText().toString() + "&password=" + password.getText().toString();
                     new UserLogin().execute(loginQuery);
