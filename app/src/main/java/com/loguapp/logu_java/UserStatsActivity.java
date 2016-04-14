@@ -336,7 +336,7 @@ public class UserStatsActivity extends Activity {
                 con.setRequestProperty("accept", "application/json");
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-                String username = preferences.getMyStringPref(UserStatsActivity.this);
+                String username = preferences.getUsername(UserStatsActivity.this);
 
                 String urlParameters = "username=" + username;
 

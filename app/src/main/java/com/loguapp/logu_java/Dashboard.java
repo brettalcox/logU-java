@@ -23,6 +23,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
 
     ListView lview;
     ListViewAdapter lviewAdapter;
+    private final Prefs preferences = new Prefs();
 
     static final int DASH_UPDATE_RESULT = 0;
     static final int STATS_UPDATE_RESULT = 1;
@@ -52,6 +53,12 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        preferences.userLoggedOut(Dashboard.this);
+        finish();
     }
 
     @Override
@@ -120,7 +127,6 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         protected JSONObject[] doInBackground(Void... params) {
 
             JSONObject[] dash_data = {};
-            Prefs preferences = new Prefs();
 
             try {
                 String url = "https://loguapp.com/swift6.php";
@@ -131,7 +137,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
                 con.setRequestProperty("accept", "application/json");
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-                String username = preferences.getMyStringPref(Dashboard.this);
+                String username = preferences.getUsername(Dashboard.this);
                 System.out.println(username);
 
                 String urlParameters = "username=" + username;

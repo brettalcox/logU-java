@@ -23,10 +23,17 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class LoginActivity extends Activity implements View.OnClickListener {
 
+    private final Prefs preferences = new Prefs();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        if (preferences.getSessionStatus(LoginActivity.this) == 1) {
+            Intent i = new Intent(getBaseContext(), Dashboard.class);
+            startActivity(i);
+        }
     }
 
     @Override
@@ -45,7 +52,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     System.out.println("Attemping login.");
 
                     Prefs prefs = new Prefs();
-                    prefs.setMyStringPref(this, username.getText().toString());
+                    prefs.setUsername(this, username.getText().toString());
 
                     String loginQuery = "username=" + username.getText().toString() + "&password=" + password.getText().toString();
                     new UserLogin().execute(loginQuery);
@@ -140,10 +147,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             int loginCode = Integer.parseInt(loginResponse);
             if (loginCode == 1) {
 
-                SharedPreferences preferences = LoginActivity.this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt("isLoggedIn", 1);
-                editor.apply();
+                preferences.userLoggedIn(LoginActivity.this);
+
+                System.out.println(preferences.getSessionStatus(LoginActivity.this));
 
                 Intent i = new Intent(getBaseContext(), Dashboard.class);
                 startActivity(i);

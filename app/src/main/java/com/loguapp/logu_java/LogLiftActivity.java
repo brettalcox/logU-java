@@ -82,7 +82,7 @@ public class LogLiftActivity extends FormActivity {
                             getModel().setValue("notes", " ");
                         }
 
-                        String username = preferences.getMyStringPref(LogLiftActivity.this);
+                        String username = preferences.getUsername(LogLiftActivity.this);
 
                         String queryParam = "name=" + username + "&date=" + logDateFormat.format(date).toString() + "&lift=" +
                                 getModel().getValue("lift").toString() + "&sets=" + getModel().getValue("sets").toString() +
