@@ -37,14 +37,12 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
         init();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     public void init() {

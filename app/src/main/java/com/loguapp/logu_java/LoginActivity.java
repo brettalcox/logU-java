@@ -30,6 +30,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        System.out.println("butts");
         if (preferences.getSessionStatus(LoginActivity.this) == 1) {
             Intent i = new Intent(getBaseContext(), Dashboard.class);
             startActivity(i);
@@ -38,7 +39,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-
+        System.out.println("help");
         switch (v.getId()) {
             case R.id.loginButton: {
 
@@ -49,10 +50,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     System.out.println("You didn't fill out all fields!");
                     loginFieldsError();
                 } else {
-                    System.out.println("Attemping login.");
-
-                    Prefs prefs = new Prefs();
-                    prefs.setUsername(this, username.getText().toString());
+                    preferences.setUsername(this, username.getText().toString());
 
                     String loginQuery = "username=" + username.getText().toString() + "&password=" + password.getText().toString();
                     new UserLogin().execute(loginQuery);

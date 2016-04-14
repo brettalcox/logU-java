@@ -7,6 +7,9 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -49,6 +52,8 @@ public class UserStatsActivity extends Activity {
     private String[] weightedVal;
 
     final Prefs preferences = new Prefs();
+    ListView lview;
+    StaticListViewAdapter lviewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +83,33 @@ public class UserStatsActivity extends Activity {
         } else {
             useCachedValues(extras);
         }
+
+        String[] staticList = {"Lift Graphs", "One Rep Maxes", "Weekly Poundage Graph", "Weekly Poundage Data",
+                "Weekly Frequency Graph", "Weekly Frequency Data"};
+        lview = (ListView) findViewById(R.id.static_listView);
+        lviewAdapter = new StaticListViewAdapter(UserStatsActivity.this, staticList);
+        lview.setAdapter(lviewAdapter);
+        setListViewHeightBasedOnChildren(lview);
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        StaticListViewAdapter listAdapter = (StaticListViewAdapter) listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 
     public void formatChart() {
