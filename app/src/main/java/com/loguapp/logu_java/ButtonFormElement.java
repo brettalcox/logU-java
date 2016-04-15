@@ -18,11 +18,20 @@ public class ButtonFormElement extends LabeledFieldController {
     @Override
     protected View createFieldView() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        return inflater.inflate(R.layout.button_form_element, null);
+
+        if (super.getName() == "saveElem") {
+            return inflater.inflate(R.layout.submit_form_element, null);
+        } else {
+            return inflater.inflate(R.layout.button_form_element, null);
+        }
     }
 
     public Button getAddButton() {
         return (Button)getView().findViewById(R.id.add_btn);
+    }
+
+    public Button getSaveChangesButton() {
+        return (Button)getView().findViewById(R.id.submit_btn);
     }
 
     public void refresh() {

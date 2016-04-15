@@ -51,14 +51,14 @@ public class Prefs {
     }
 
     public static int getBodyweight(Context context) {
-        return getPrefs(context).getInt(BODYWEIGHT, 0);
+        return getPrefs(context).getInt(BODYWEIGHT, 9000);
     }
 
-    public static String getGender(Context context) {
-        return getPrefs(context).getString(GENDER, "Unknown");
+    public static int getGender(Context context) {
+        return getPrefs(context).getInt(GENDER, 1);
     }
 
-    public static String getUnit(Context context) {
-        return getPrefs(context).getString(UNIT, "Unknown");
+    public static int getUnit(Context context) {
+        return getPrefs(context).getInt(UNIT, 1);
     }
 }
