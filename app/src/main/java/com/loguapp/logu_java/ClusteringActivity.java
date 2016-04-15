@@ -1,8 +1,16 @@
 package com.loguapp.logu_java;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -27,10 +35,8 @@ public class ClusteringActivity extends CommunityActivity {
     private JSONObject[] gpsCoords;
 
     protected void setUpClusterer() {
-        // Declare a variable for the cluster manager.
 
-        // Position the map.
-        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 2));
+        //getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 2));
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
@@ -41,8 +47,19 @@ public class ClusteringActivity extends CommunityActivity {
         getMap().setOnCameraChangeListener(mClusterManager);
         getMap().setOnMarkerClickListener(mClusterManager);
 
-        // Add cluster items (markers) to the cluster manager.
         addItems();
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        getMap().setMyLocationEnabled(true);
     }
 
     private void addItems() {
@@ -55,13 +72,13 @@ public class ClusteringActivity extends CommunityActivity {
             e.printStackTrace();
         }
 
-        int lat;
-        int lng;
+        double lat;
+        double lng;
 
         for (int i = 0; i < gpsCoords.length; i++) {
             try {
-                lat = gpsCoords[i].getInt("latitude");
-                lng = gpsCoords[i].getInt("longitude");
+                lat = Double.parseDouble(gpsCoords[i].get("latitude").toString());
+                lng = Double.parseDouble(gpsCoords[i].get("longitude").toString());
                 MapItemCluster item = new MapItemCluster(lat, lng);
                 mClusterManager.addItem(item);
             } catch (JSONException e) {
