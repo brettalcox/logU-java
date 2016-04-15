@@ -3,8 +3,6 @@ package com.loguapp.logu_java;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 
 /**

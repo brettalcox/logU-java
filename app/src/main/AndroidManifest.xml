@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CommunityActivity"></activity>
+        <activity android:name=".ClusteringActivity"></activity>
         <activity android:name=".UserStatsActivity"></activity>
         <activity android:name=".SettingsActivity"></activity>
         <activity android:name=".LogLiftActivity"></activity>

@@ -1,12 +1,7 @@
 package com.loguapp.logu_java;
 
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.github.dkharrat.nexusdialog.FormActivity;
 import com.github.dkharrat.nexusdialog.controllers.EditTextController;

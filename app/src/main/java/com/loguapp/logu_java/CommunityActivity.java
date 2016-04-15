@@ -1,7 +1,5 @@
 package com.loguapp.logu_java;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -9,23 +7,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.MapFragment;
+
+
 /**
  * Created by BA042808 on 3/31/2016.
  */
-public class CommunityActivity extends FragmentActivity {
+public abstract class CommunityActivity extends FragmentActivity implements OnMapReadyCallback{
 
     ListView lview;
     StaticListViewAdapter lviewAdapter;
+    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_fragment);
 
-        Fragment newFragment = new MapFragment();
+        MapFragment mapFragment = new MapFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.mapView, newFragment);
+        transaction.replace(R.id.mapView, mapFragment);
         transaction.commit();
+        mapFragment.getMapAsync(this);
 
         String[] staticList = {"Weekly Poundage Graph", "Weekly Poundage Data", "Targeted Muscle Graph"};
         lview = (ListView) findViewById(R.id.staticCommListView);
@@ -53,4 +58,17 @@ public class CommunityActivity extends FragmentActivity {
         listView.setLayoutParams(params);
         listView.requestLayout();
     }
+
+    @Override
+    public void onMapReady(final GoogleMap map) {
+
+        mMap = map;
+        setUpClusterer();
+    }
+
+    protected GoogleMap getMap() {
+        return mMap;
+    }
+
+    protected abstract void setUpClusterer();
 }

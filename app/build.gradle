@@ -28,6 +28,7 @@ dependencies {
     compile 'com.github.dkharrat.nexusdialog:nexusdialog:0.4.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
     compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.google.maps.android:android-maps-utils:0.4+'
 }
 
 repositories {
