@@ -63,6 +63,9 @@ public class SettingsActivity extends FormActivity {
 
                 preferences.setBodyweight(SettingsActivity.this, Integer.parseInt(bodyweightElem.getEditText().getText().toString()));
                 System.out.println(preferences.getBodyweight(SettingsActivity.this));
+
+                submitElem.getSaveChangesButton().setClickable(false);
+                submitElem.getSaveChangesButton().setAlpha((float) 0.25);
             }
         });
 
