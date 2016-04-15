@@ -51,7 +51,7 @@ public class Prefs {
     }
 
     public static int getBodyweight(Context context) {
-        return getPrefs(context).getInt(BODYWEIGHT, 9000);
+        return getPrefs(context).getInt(BODYWEIGHT, 0);
     }
 
     public static String getGender(Context context) {
