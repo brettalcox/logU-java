@@ -34,7 +34,15 @@ This is the current Android development of logU: A Strength Logger for iOS
 
 
 
-![alt tag](http://i.imgur.com/y7JR5bP.png?2)
+![alt tag](http://i.imgur.com/KEIdCh4.png?1)
+
+
+
+### logU Community
+
+
+
+![alt tag](http://i.imgur.com/tzaFpIB.png?1)
 
 
 
@@ -42,6 +50,6 @@ This is the current Android development of logU: A Strength Logger for iOS
 
 
 
-![alt tag](http://i.imgur.com/4ceW5tp.png?1)
+![alt tag](http://i.imgur.com/wGzC2OK.png?1)
 
 
