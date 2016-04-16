@@ -1,6 +1,5 @@
 package com.loguapp.logu_java;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -9,8 +8,6 @@ import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -36,14 +33,8 @@ public class ClusteringActivity extends CommunityActivity {
 
     protected void setUpClusterer() {
 
-        //getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 2));
-
-        // Initialize the manager with the context and the map.
-        // (Activity extends context, so we can pass 'this' in the constructor.)
         mClusterManager = new ClusterManager<MapItemCluster>(this, getMap());
 
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
         getMap().setOnCameraChangeListener(mClusterManager);
         getMap().setOnMarkerClickListener(mClusterManager);
 
@@ -60,6 +51,19 @@ public class ClusteringActivity extends CommunityActivity {
             return;
         }
         getMap().setMyLocationEnabled(true);
+
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String provider = locationManager.getBestProvider(criteria, true);
+        Location myLocation = locationManager.getLastKnownLocation(provider);
+
+        double latitude = myLocation.getLatitude();
+        double longitude = myLocation.getLongitude();
+
+        LatLng latLng = new LatLng(latitude, longitude);
+
+        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+
     }
 
     private void addItems() {

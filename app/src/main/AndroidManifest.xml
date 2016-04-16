@@ -29,13 +29,13 @@
         <activity android:name=".LogLiftActivity"></activity>
         <activity android:name=".Dashboard"></activity>
         <!--at home-debug-->
-        <!--meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBtBU3zI4VP5H-9DDXfngvPntxgNT3F8AU" /-->
-        <!--at work-debug-->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCEbZ-k2YemqmHiLGjyLUlb-SLNyjpAKlw" />
+            android:value="AIzaSyBtBU3zI4VP5H-9DDXfngvPntxgNT3F8AU" />
+        <!--at work-debug>
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyCEbZ-k2YemqmHiLGjyLUlb-SLNyjpAKlw" /-->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
