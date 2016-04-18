@@ -42,8 +42,8 @@ public class Prefs {
         getPrefs(context).edit().putInt(BODYWEIGHT, value).apply();
     }
 
-    public static void setGender(Context context, int value) {
-        getPrefs(context).edit().putInt(GENDER, value).apply();
+    public static void setGender(Context context, String value) {
+        getPrefs(context).edit().putString(GENDER, value).apply();
     }
 
     public static void setUnit(Context context, int value) {
@@ -54,8 +54,8 @@ public class Prefs {
         return getPrefs(context).getInt(BODYWEIGHT, 9000);
     }
 
-    public static int getGender(Context context) {
-        return getPrefs(context).getInt(GENDER, 1);
+    public static String getGender(Context context) {
+        return getPrefs(context).getString(GENDER, "M");
     }
 
     public static int getUnit(Context context) {

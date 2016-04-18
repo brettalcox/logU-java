@@ -2,12 +2,21 @@ package com.loguapp.logu_java;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.media.audiofx.BassBoost;
+import android.os.AsyncTask;
 import android.text.InputType;
 import android.view.View;
 
 import com.github.dkharrat.nexusdialog.FormActivity;
 import com.github.dkharrat.nexusdialog.controllers.EditTextController;
 import com.github.dkharrat.nexusdialog.controllers.FormSectionController;
+
+import java.io.DataOutputStream;
+import java.net.URL;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by BA042808 on 3/31/2016.
@@ -66,16 +75,27 @@ public class SettingsActivity extends FormActivity {
                     }
 
                     if (genderElem.getAddToggle().getText() == "Male") {
-                        preferences.setUnit(SettingsActivity.this, 1);
+                        preferences.setGender(SettingsActivity.this, "M");
                     } else {
-                        preferences.setUnit(SettingsActivity.this, 0);
+                        preferences.setGender(SettingsActivity.this, "F");
                     }
 
                     preferences.setBodyweight(SettingsActivity.this, Integer.parseInt(bodyweightElem.getEditText().getText().toString()));
                     System.out.println(preferences.getBodyweight(SettingsActivity.this));
 
-                    submitElem.getSaveChangesButton().setClickable(false);
-                    submitElem.getSaveChangesButton().setAlpha((float) 0.25);
+                    try {
+                        if (new UserSettings().execute("username=" + preferences.getUsername(SettingsActivity.this) + "&unit=" + preferences.getUnit(SettingsActivity.this)
+                                + "&gender=" + preferences.getGender(SettingsActivity.this) + "&bodyweight=" + preferences.getBodyweight(SettingsActivity.this)).get()) {
+                            submitElem.getSaveChangesButton().setClickable(false);
+                            submitElem.getSaveChangesButton().setAlpha((float) 0.25);
+                        } else {
+
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -96,5 +116,39 @@ public class SettingsActivity extends FormActivity {
         section1.addElement(bodyweightElem);
         section1.addElement(submitElem);
         getFormController().addSection(section1);
+    }
+
+    public class UserSettings extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            String urlParam = params[0];
+
+            try {
+                String url = "https://loguapp.com/swift10.php";
+                URL obj = new URL(url);
+                HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+                con.setRequestMethod("POST");
+                con.setRequestProperty("accept", "application/json");
+                con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+
+                String urlParameters = urlParam;
+
+                con.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                wr.writeBytes(urlParameters);
+                wr.flush();
+                wr.close();
+
+                int responseCode = con.getResponseCode();
+                System.out.println("\nSending 'POST' request to URL : " + url);
+                System.out.println("Post parameters : " + urlParameters);
+                System.out.println("Response Code : " + responseCode);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
     }
 }
