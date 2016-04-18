@@ -1,9 +1,7 @@
 package com.loguapp.logu_java;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.media.audiofx.BassBoost;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.text.InputType;
 import android.view.View;
 
@@ -13,7 +11,6 @@ import com.github.dkharrat.nexusdialog.controllers.FormSectionController;
 
 import java.io.DataOutputStream;
 import java.net.URL;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -54,19 +51,12 @@ public class SettingsActivity extends FormActivity {
 
         submitElem.getSaveChangesButton().setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
 
                 if (getModel().getValue("bodyweight") == null) {
-                    new AlertDialog.Builder(SettingsActivity.this)
-                            .setTitle("Saving changes failed!")
-                            .setMessage("Please enter a valid bodyweight.")
-                            .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
+                    Snackbar snackbar = Snackbar
+                            .make(v, "Save Changes Failed! Enter a valid weight.", Snackbar.LENGTH_LONG);
+                    snackbar.show();
                 } else {
                     if (unitElem.getAddToggle().getText() == "Lbs") {
                         preferences.setUnit(SettingsActivity.this, 1);
@@ -88,8 +78,14 @@ public class SettingsActivity extends FormActivity {
                                 + "&gender=" + preferences.getGender(SettingsActivity.this) + "&bodyweight=" + preferences.getBodyweight(SettingsActivity.this)).get()) {
                             submitElem.getSaveChangesButton().setClickable(false);
                             submitElem.getSaveChangesButton().setAlpha((float) 0.25);
-                        } else {
 
+                            Snackbar snackbar = Snackbar
+                                    .make(v, "Saved Changes.", Snackbar.LENGTH_LONG);
+                            snackbar.show();
+                        } else {
+                            Snackbar snackbar = Snackbar
+                                    .make(v, "Saving Changes Failed! Do you have a network connection?", Snackbar.LENGTH_LONG);
+                            snackbar.show();
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
