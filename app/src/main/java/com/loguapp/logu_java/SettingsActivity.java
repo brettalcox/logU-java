@@ -11,6 +11,7 @@ import com.github.dkharrat.nexusdialog.controllers.FormSectionController;
 
 import java.io.DataOutputStream;
 import java.net.URL;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -103,6 +104,18 @@ public class SettingsActivity extends FormActivity {
         genderElem.getAddToggle().setText("Male");
         genderElem.getAddToggle().setTextOff("Male");
         genderElem.getAddToggle().setTextOn("Female");
+
+        if (preferences.getUnit(SettingsActivity.this) == 0) {
+            unitElem.getAddToggle().setChecked(true);
+        }
+
+        if (preferences.getGender(SettingsActivity.this) == "F") {
+            genderElem.getAddToggle().setChecked(true);
+        }
+
+        if (preferences.getBodyweight(SettingsActivity.this) != 9000) {
+            getModel().setValue("bodyweight", preferences.getBodyweight(SettingsActivity.this));
+        }
 
         submitElem.getSaveChangesButton().setClickable(false);
         submitElem.getSaveChangesButton().setAlpha((float) 0.25);
