@@ -1,5 +1,6 @@
 package com.loguapp.logu_java;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.text.InputType;
@@ -120,10 +121,21 @@ public class SettingsActivity extends FormActivity {
         submitElem.getSaveChangesButton().setClickable(false);
         submitElem.getSaveChangesButton().setAlpha((float) 0.25);
 
+        final ButtonFormElement mapButton = new ButtonFormElement(this, "mapElem", "");
+        mapButton.getAddButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getBaseContext(), MapCoordsSettingsActivity.class);
+                startActivity(i);
+            }
+        });
+        mapButton.getAddButton().setText("Set Coords");
+
         section1.addElement(unitElem);
         section1.addElement(genderElem);
         section1.addElement(bodyweightElem);
         section1.addElement(submitElem);
+        section1.addElement(mapButton);
         getFormController().addSection(section1);
     }
 
