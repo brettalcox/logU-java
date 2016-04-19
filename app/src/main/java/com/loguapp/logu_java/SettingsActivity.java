@@ -3,8 +3,10 @@ package com.loguapp.logu_java;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
+import android.text.Html;
 import android.text.InputType;
 import android.view.View;
+import android.widget.Button;
 
 import com.github.dkharrat.nexusdialog.FormActivity;
 import com.github.dkharrat.nexusdialog.controllers.EditTextController;
@@ -24,6 +26,8 @@ public class SettingsActivity extends FormActivity {
 
     private final Prefs preferences = new Prefs();
     static final int GYM_LOCATION_RESULT = 2;
+
+    final ButtonFormElement mapButton = new ButtonFormElement(this, "mapElem", "Gym Location");
 
     @Override
     protected void initForm() {
@@ -122,7 +126,12 @@ public class SettingsActivity extends FormActivity {
         submitElem.getSaveChangesButton().setClickable(false);
         submitElem.getSaveChangesButton().setAlpha((float) 0.25);
 
-        final ButtonFormElement mapButton = new ButtonFormElement(this, "mapElem", "");
+        if (!(preferences.getLat(SettingsActivity.this) > 0.0) && !(preferences.getLon(SettingsActivity.this) > 0.0)) {
+            mapButton.getAddButton().setText("Set Gym Location");
+        } else {
+            mapButton.getAddButton().setText(preferences.getLat(SettingsActivity.this) + ", "
+                    + preferences.getLon(SettingsActivity.this));
+        }
         mapButton.getAddButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,7 +139,6 @@ public class SettingsActivity extends FormActivity {
                 startActivityForResult(i, GYM_LOCATION_RESULT);
             }
         });
-        mapButton.getAddButton().setText("Set Gym Location");
 
         section1.addElement(unitElem);
         section1.addElement(genderElem);
@@ -146,6 +154,8 @@ public class SettingsActivity extends FormActivity {
             if (resultCode == RESULT_OK) {
                 preferences.setLat(SettingsActivity.this, data.getDoubleExtra("latitude", 0));
                 preferences.setLon(SettingsActivity.this, data.getDoubleExtra("longitude", 0));
+
+                mapButton.getAddButton().setText(preferences.getLat(SettingsActivity.this) + ", " + preferences.getLon(SettingsActivity.this));
 
                 Snackbar snackbar = Snackbar
                         .make(getCurrentFocus(), "Gym Location Saved.", Snackbar.LENGTH_LONG);
