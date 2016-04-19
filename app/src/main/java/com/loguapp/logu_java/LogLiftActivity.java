@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.text.InputType;
 import android.view.View;
 
@@ -56,18 +57,12 @@ public class LogLiftActivity extends FormActivity {
                 try {
 
                     if (getModel().getValue("date") == null || getModel().getValue("lift") == null ||
-                            getModel().getValue("sets") == null || getModel().getValue("reps") == null ||
+                            (getModel().getValue("sets") == null || getModel().getValue("sets") == 0) ||
+                            (getModel().getValue("reps") == null || getModel().getValue("reps") == 0) ||
                             getModel().getValue("weight") == null) {
-                        new AlertDialog.Builder(LogLiftActivity.this)
-                                .setTitle("Log Lift Failed!")
-                                .setMessage("Fill out all of the required fields.")
-                                .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // do nothing
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
+                        Snackbar snackbar = Snackbar
+                                .make(v, "Log Lift Failed! Fill out all required fields!", Snackbar.LENGTH_LONG);
+                        snackbar.show();
                     } else {
                         Date date = initialDateFormat.parse(getModel().getValue("date").toString());
                         System.out.println(logDateFormat.format(date));

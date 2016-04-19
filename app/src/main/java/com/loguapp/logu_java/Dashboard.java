@@ -33,6 +33,10 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
     private String[] muscleCat;
     private String[] weightedVal;
 
+    private String[] intentIntensity;
+    private String[] intentNotes;
+    private String[] intentID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +132,9 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
                 i.putExtra("Lift", lviewAdapter.lift[position]);
                 i.putExtra("Set_Rep", lviewAdapter.set_rep[position]);
                 i.putExtra("Weight", lviewAdapter.weight[position]);
+                i.putExtra("Intensity", intentIntensity[position]);
+                i.putExtra("Notes", intentNotes[position]);
+                i.putExtra("ID", intentID[position]);
                 startActivityForResult(i, DASH_UPDATE_RESULT);
             }
         });
@@ -199,6 +206,9 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
             String[] lifts = new String[user_data.length];
             String[] set_reps = new String[user_data.length];
             String[] weights = new String[user_data.length];
+            String[] intensity = new String[user_data.length];
+            String[] notes = new String[user_data.length];
+            String[] id = new String[user_data.length];
 
             for (int i = 0; i < user_data.length; ++i) {
                 try {
@@ -206,9 +216,24 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
                     lifts[i] = user_data[i].get("lift").toString();
                     set_reps[i] = user_data[i].get("sets").toString() + "x" + user_data[i].get("reps").toString();
                     weights[i] = user_data[i].get("weight").toString();
+                    intensity[i] = user_data[i].get("intensity").toString();
+                    notes[i] = user_data[i].get("notes").toString();
+                    id[i] = user_data[i].get("id").toString();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
+
+            if (intensity != null) {
+                intentIntensity = intensity;
+            }
+
+            if (notes != null) {
+                intentNotes = notes;
+            }
+
+            if (id != null) {
+                intentID = id;
             }
 
             lview = (ListView) findViewById(R.id.listView);
