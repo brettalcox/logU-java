@@ -14,6 +14,8 @@ import com.github.dkharrat.nexusdialog.controllers.EditTextController;
 import com.github.dkharrat.nexusdialog.controllers.FormSectionController;
 import com.github.dkharrat.nexusdialog.controllers.SelectionController;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.DataOutputStream;
 import java.net.URL;
 import java.text.ParseException;
@@ -42,19 +44,28 @@ public class UpdateLiftActivity extends FormActivity {
 
         final Prefs preferences = new Prefs();
 
-        section1.addElement(new DatePickerController(this, "date", "Date", true, dateFormat));
-        section1.addElement(new SelectionController(this, "lift", "Lift", true, "Select Lift", lifts, true));
-        section1.addElement(new EditTextController(this, "sets", "Sets", "", true, InputType.TYPE_CLASS_NUMBER));
-        section1.addElement(new EditTextController(this, "reps", "Reps", "", true, InputType.TYPE_CLASS_NUMBER));
-        section1.addElement(new EditTextController(this, "weight", "Weight", "", true, InputType.TYPE_CLASS_NUMBER));
-        section1.addElement(new EditTextController(this, "intensity", "Intensity", "", true, InputType.TYPE_CLASS_NUMBER));
-        section1.addElement(new EditTextController(this, "notes", "Notes"));
+        final DatePickerController setDate = new DatePickerController(this, "date", "Date", true, dateFormat);
+        final SelectionController setLift = new SelectionController(this, "lift", "Lift", true, "Select Lift", lifts, true);
+        final EditTextController setSets = new EditTextController(this, "sets", "Sets", "", true, InputType.TYPE_CLASS_NUMBER);
+        final EditTextController setReps = new EditTextController(this, "reps", "Reps", "", true, InputType.TYPE_CLASS_NUMBER);
+        final EditTextController setWeight = new EditTextController(this, "weight", "Weight", "", true, InputType.TYPE_CLASS_NUMBER);
+        final EditTextController setIntensity = new EditTextController(this, "intensity", "Intensity", "", true, InputType.TYPE_CLASS_NUMBER);
+        final EditTextController setNotes = new EditTextController(this, "notes", "Notes");
 
-        //getModel().setValue("date", extras.getString("Date"));
+        try {
+            Date date = dateFormat.parse(extras.getString("Date"));
+            getModel().setValue("date", date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         getModel().setValue("lift", extras.getString("Lift"));
+
+        String[] setRep = extras.getString("Set_Rep").split("x");
+        getModel().setValue("sets", setRep[0]);
+        getModel().setValue("reps", setRep[1]);
         getModel().setValue("weight", extras.getString("Weight"));
 
-        ButtonFormElement buttonElem = new ButtonFormElement(this, "updateElem", "");
+        final ButtonFormElement buttonElem = new ButtonFormElement(this, "updateElem", "");
         buttonElem.getUpdateButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,7 +117,24 @@ public class UpdateLiftActivity extends FormActivity {
                 }
             }
         });
+        buttonElem.getUpdateButton().setAlpha((float) 0.25);
+        buttonElem.getUpdateButton().setClickable(false);
 
+        getModel().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                buttonElem.getUpdateButton().setAlpha((float) 1.0);
+                buttonElem.getUpdateButton().setClickable(true);
+            }
+        });
+
+        section1.addElement(setDate);
+        section1.addElement(setLift);
+        section1.addElement(setSets);
+        section1.addElement(setReps);
+        section1.addElement(setWeight);
+        section1.addElement(setIntensity);
+        section1.addElement(setNotes);
         section1.addElement(buttonElem);
         getFormController().addSection(section1);
     }
