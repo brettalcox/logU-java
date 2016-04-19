@@ -12,6 +12,8 @@ public class Prefs {
     private static String BODYWEIGHT = "bodyweight";
     private static String GENDER = "gender";
     private static String UNIT = "unit";
+    private static String LATITUDE = "latitude";
+    private static String LONGITUDE = "longitude";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences("MyPreferences", 0);
@@ -60,5 +62,21 @@ public class Prefs {
 
     public static int getUnit(Context context) {
         return getPrefs(context).getInt(UNIT, 1);
+    }
+
+    public static void setLat(Context context, double value) {
+        getPrefs(context).edit().putFloat(LATITUDE, (float) value).apply();
+    }
+
+    public static void setLon(Context context, double value) {
+        getPrefs(context).edit().putFloat(LONGITUDE, (float) value).apply();
+    }
+
+    public static float getLat(Context context) {
+        return getPrefs(context).getFloat(LATITUDE, 0);
+    }
+
+    public static float getLon(Context context) {
+        return getPrefs(context).getFloat(LONGITUDE, 0);
     }
 }

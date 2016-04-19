@@ -23,6 +23,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class SettingsActivity extends FormActivity {
 
     private final Prefs preferences = new Prefs();
+    static final int GYM_LOCATION_RESULT = 2;
 
     @Override
     protected void initForm() {
@@ -126,10 +127,10 @@ public class SettingsActivity extends FormActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getBaseContext(), MapCoordsSettingsActivity.class);
-                startActivity(i);
+                startActivityForResult(i, GYM_LOCATION_RESULT);
             }
         });
-        mapButton.getAddButton().setText("Set Coords");
+        mapButton.getAddButton().setText("Set Gym Location");
 
         section1.addElement(unitElem);
         section1.addElement(genderElem);
@@ -137,6 +138,24 @@ public class SettingsActivity extends FormActivity {
         section1.addElement(submitElem);
         section1.addElement(mapButton);
         getFormController().addSection(section1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GYM_LOCATION_RESULT) {
+            if (resultCode == RESULT_OK) {
+                preferences.setLat(SettingsActivity.this, data.getDoubleExtra("latitude", 0));
+                preferences.setLon(SettingsActivity.this, data.getDoubleExtra("longitude", 0));
+
+                Snackbar snackbar = Snackbar
+                        .make(getCurrentFocus(), "Gym Location Saved.", Snackbar.LENGTH_LONG);
+                snackbar.show();
+            } else {
+                Snackbar snackbar = Snackbar
+                        .make(getCurrentFocus(), "Gym Location Not Saved.", Snackbar.LENGTH_LONG);
+                snackbar.show();
+            }
+        }
     }
 
     public class UserSettings extends AsyncTask<String, Void, Boolean> {

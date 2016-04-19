@@ -42,6 +42,8 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         init();
+        System.out.println(preferences.getLat(Dashboard.this));
+        System.out.println(preferences.getLon(Dashboard.this));
     }
 
     @Override

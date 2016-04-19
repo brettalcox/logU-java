@@ -4,5 +4,11 @@
     android:layout_height="match_parent">
     <com.loguapp.logu_java.CustomMapView android:id="@+id/setMapCoords"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="467dp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Gym Location"
+        android:id="@+id/setGymLocation" />
 </LinearLayout>
