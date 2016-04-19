@@ -21,6 +21,9 @@ public class ButtonFormElement extends LabeledFieldController {
 
         if (super.getName() == "saveElem") {
             return inflater.inflate(R.layout.submit_form_element, null);
+        }
+        else if (super.getName() == "updateElem") {
+            return inflater.inflate(R.layout.update_form_element, null);
         } else {
             return inflater.inflate(R.layout.button_form_element, null);
         }
@@ -32,6 +35,10 @@ public class ButtonFormElement extends LabeledFieldController {
 
     public Button getSaveChangesButton() {
         return (Button)getView().findViewById(R.id.submit_btn);
+    }
+
+    public Button getUpdateButton() {
+        return (Button)getView().findViewById(R.id.update_btn);
     }
 
     public void refresh() {

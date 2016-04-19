@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import org.json.JSONException;
@@ -118,6 +120,19 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         }
     }
 
+    public void setLviewListener() {
+        lview.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(getBaseContext(), UpdateLiftActivity.class);
+                i.putExtra("Date", lviewAdapter.date[position]);
+                i.putExtra("Lift", lviewAdapter.lift[position]);
+                i.putExtra("Set_Rep", lviewAdapter.set_rep[position]);
+                i.putExtra("Weight", lviewAdapter.weight[position]);
+                startActivityForResult(i, DASH_UPDATE_RESULT);
+            }
+        });
+    }
+
     public class LiftData extends AsyncTask<Void, Void, JSONObject[]> {
         @Override
         protected JSONObject[] doInBackground(Void... params) {
@@ -199,9 +214,10 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
             lview = (ListView) findViewById(R.id.listView);
             lviewAdapter = new ListViewAdapter(Dashboard.this, dates, lifts, set_reps, weights);
 
-            System.out.println("adapter => "+lviewAdapter.getCount());
+            System.out.println("adapter => " + lviewAdapter.getCount());
 
             lview.setAdapter(lviewAdapter);
+            setLviewListener();
         }
     }
 }
