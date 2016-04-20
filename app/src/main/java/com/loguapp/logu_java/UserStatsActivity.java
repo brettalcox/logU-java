@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -87,6 +88,19 @@ public class UserStatsActivity extends Activity {
         lviewAdapter = new StaticListViewAdapter(UserStatsActivity.this, staticList);
         lview.setAdapter(lviewAdapter);
         setListViewHeightBasedOnChildren(lview);
+    }
+
+    public void setLviewListener() {
+        lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        Intent i = new Intent(getBaseContext(), GraphListViewActivity.class);
+                        startActivity(i);
+                        break;
+                }
+            }
+        });
     }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
@@ -404,8 +418,12 @@ public class UserStatsActivity extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             return dash_data;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject[] user_data) {
+            setLviewListener();
         }
     }
 }

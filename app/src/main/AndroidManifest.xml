@@ -30,6 +30,7 @@
         <activity android:name=".Dashboard"></activity>
         <activity android:name=".UpdateLiftActivity"></activity>
         <activity android:name=".MapCoordsSettingsActivity"></activity>
+        <activity android:name=".GraphListViewActivity"></activity>
         <!--at home-debug>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
