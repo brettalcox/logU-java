@@ -1,12 +1,17 @@
 package com.loguapp.logu_java;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,49 +21,82 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Created by BA042808 on 4/20/2016.
+ * Created by brettalcox on 4/22/16.
  */
-public class GraphListViewActivity extends Activity {
-
-    ListView lview;
-    GraphListViewAdapter lviewAdapter;
+public class LiftChartActivity extends Activity {
 
     private final Prefs preferences = new Prefs();
-    private static final int LIFT_GRAPH = 3;
+    private LineChart mChart;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_graphlist);
-        init();
+        setContentView(R.layout.activity_lift_graph);
+
+        mChart = (LineChart) findViewById(R.id.lift_graph);
+        YAxis y = mChart.getAxisLeft();
+        y.setAxisMinValue(0);
+
+        new GraphData().execute();
+
+        mChart.animateY(1000);
+
+        // dont forget to refresh the drawing
+        mChart.invalidate();
     }
 
-    public void init() {
-        new LiftNames().execute();
+    private void setData(String[] date, float[] weight) {
+
+        final Bundle extras = getIntent().getExtras();
+
+        ArrayList<String> xVals = new ArrayList<String>();
+        for (int i = 0; i < date.length; i++) {
+            xVals.add(date[i]);
+        }
+
+        ArrayList<Entry> yVals = new ArrayList<Entry>();
+
+        for (int i = 0; i < weight.length; i++) {
+            yVals.add(new Entry(weight[i], i));
+        }
+
+        LineDataSet set1;
+
+        set1 = new LineDataSet(yVals, extras.get("Lift").toString());
+
+        set1.setDrawCubic(true);
+        set1.setCubicIntensity(0.2f);
+        set1.setDrawCircles(false);
+        set1.setDrawCircleHole(false);
+        set1.setColor(Color.rgb(0, 152,255));
+        set1.setLineWidth(1f);
+        set1.setValueTextSize(9f);
+        set1.setDrawFilled(true);
+        set1.setFillColor(Color.rgb(0, 152, 255));
+
+
+        ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+        dataSets.add(set1); // add the datasets
+
+        LineData data = new LineData(xVals, dataSets);
+
+        mChart.setData(data);
     }
 
-    public void setLviewListener() {
-        lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getBaseContext(), LiftChartActivity.class);
-                i.putExtra("Lift", lviewAdapter.lift[position]);
-                startActivityForResult(i, LIFT_GRAPH);
-            }
-        });
-    }
-
-    public class LiftNames extends AsyncTask<Void, Void, JSONObject[]> {
+    public class GraphData extends AsyncTask<Void, Void, JSONObject[]> {
         @Override
         protected JSONObject[] doInBackground(Void... params) {
 
             JSONObject[] dash_data = {};
+            final Bundle extras = getIntent().getExtras();
 
             try {
-                String url = "https://loguapp.com/swift8.php";
+                String url = "https://loguapp.com/lift_graph.php";
                 URL obj = new URL(url);
                 HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
@@ -66,10 +104,10 @@ public class GraphListViewActivity extends Activity {
                 con.setRequestProperty("accept", "application/json");
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-                String username = preferences.getUsername(GraphListViewActivity.this);
+                String username = preferences.getUsername(LiftChartActivity.this);
                 System.out.println(username);
 
-                String urlParameters = "username=" + username;
+                String urlParameters = "username=" + username + "&lift=" + extras.get("Lift").toString();
 
                 con.setDoOutput(true);
                 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
@@ -97,8 +135,7 @@ public class GraphListViewActivity extends Activity {
 
                 JSONObject[] user_data = new JSONObject[json_data.length()];
 
-                for(int i=0; i < json_data.length(); i++)
-                {
+                for (int i = 0; i < json_data.length(); i++) {
                     object = json_data.getJSONObject(i);
                     user_data[i] = object;
                 }
@@ -116,23 +153,19 @@ public class GraphListViewActivity extends Activity {
         @Override
         protected void onPostExecute(JSONObject[] user_data) {
 
-            String[] lifts = new String[user_data.length];
+            String[] dates = new String[user_data.length];
+            float[] weights = new float[user_data.length];
 
             for (int i = 0; i < user_data.length; ++i) {
                 try {
-                    lifts[i] = user_data[i].get("lift").toString();
+                    dates[i] = user_data[i].get("date").toString();
+                    weights[i] = Float.parseFloat(user_data[i].get("weight").toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+            setData(dates, weights);
 
-            lview = (ListView) findViewById(R.id.graphList);
-            lviewAdapter = new GraphListViewAdapter(GraphListViewActivity.this, lifts);
-
-            System.out.println("adapter => " + lviewAdapter.getCount());
-
-            lview.setAdapter(lviewAdapter);
-            setLviewListener();
         }
     }
 }

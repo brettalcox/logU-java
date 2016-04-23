@@ -31,6 +31,7 @@
         <activity android:name=".UpdateLiftActivity"></activity>
         <activity android:name=".MapCoordsSettingsActivity"></activity>
         <activity android:name=".GraphListViewActivity"></activity>
+        <activity android:name=".LiftChartActivity"></activity>
         <!--at home-debug>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

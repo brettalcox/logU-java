@@ -57,8 +57,8 @@ public class LogLiftActivity extends FormActivity {
                 try {
 
                     if (getModel().getValue("date") == null || getModel().getValue("lift") == null ||
-                            (getModel().getValue("sets") == null || getModel().getValue("sets") == 0) ||
-                            (getModel().getValue("reps") == null || getModel().getValue("reps") == 0) ||
+                            (getModel().getValue("sets") == null || getModel().getValue("sets") == "0") ||
+                            (getModel().getValue("reps") == null || getModel().getValue("reps") == "0") ||
                             getModel().getValue("weight") == null) {
                         Snackbar snackbar = Snackbar
                                 .make(v, "Log Lift Failed! Fill out all required fields!", Snackbar.LENGTH_LONG);
