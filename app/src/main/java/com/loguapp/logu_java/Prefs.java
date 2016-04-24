@@ -14,6 +14,7 @@ public class Prefs {
     private static String UNIT = "unit";
     private static String LATITUDE = "latitude";
     private static String LONGITUDE = "longitude";
+    private static String LOG_GPS = "log_gps";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences("MyPreferences", 0);
@@ -73,10 +74,18 @@ public class Prefs {
     }
 
     public static float getLat(Context context) {
-        return getPrefs(context).getFloat(LATITUDE, 0);
+        return getPrefs(context).getFloat(LATITUDE, 6969);
     }
 
     public static float getLon(Context context) {
-        return getPrefs(context).getFloat(LONGITUDE, 0);
+        return getPrefs(context).getFloat(LONGITUDE, 6969);
+    }
+
+    public static void setLogGPS(Context context, boolean value) {
+        getPrefs(context).edit().putBoolean(LOG_GPS, value).apply();
+    }
+
+    public static boolean getLogGPS(Context context) {
+        return getPrefs(context).getBoolean(LOG_GPS, false);
     }
 }

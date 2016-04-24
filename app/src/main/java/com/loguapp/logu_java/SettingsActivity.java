@@ -1,12 +1,16 @@
 package com.loguapp.logu_java;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.text.Html;
 import android.text.InputType;
+import android.view.DragEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import com.github.dkharrat.nexusdialog.FormActivity;
 import com.github.dkharrat.nexusdialog.controllers.EditTextController;
@@ -34,17 +38,19 @@ public class SettingsActivity extends FormActivity {
         setContentView(R.layout.form_activity);
 
         final FormSectionController section1 = new FormSectionController(this, "Settings");
+        final FormSectionController section2 = new FormSectionController(this, "Privacy Settings");
 
         final ToggleFormElement unitElem = new ToggleFormElement(this, "unitElem", "Unit");
         final ToggleFormElement genderElem = new ToggleFormElement(this, "genderElem", "Gender");
         final EditTextController bodyweightElem = new EditTextController(this, "bodyweight", "Bodyweight", "", true, InputType.TYPE_CLASS_NUMBER);
         final ButtonFormElement submitElem = new ButtonFormElement(this, "saveElem", "");
+        final SwitchFormElement logGPSelem = new SwitchFormElement(this, "logGPSelem", "Log GPS on Community Map");
 
         unitElem.getAddToggle().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 submitElem.getSaveChangesButton().setClickable(true);
-                submitElem.getSaveChangesButton().setAlpha((float) 1);
+                submitElem.getSaveChangesButton().setAlpha(1F);
             }
         });
 
@@ -52,7 +58,7 @@ public class SettingsActivity extends FormActivity {
             @Override
             public void onClick(View v) {
                 submitElem.getSaveChangesButton().setClickable(true);
-                submitElem.getSaveChangesButton().setAlpha((float) 1);
+                submitElem.getSaveChangesButton().setAlpha(1F);
             }
         });
 
@@ -84,14 +90,20 @@ public class SettingsActivity extends FormActivity {
                         if (new UserSettings().execute("username=" + preferences.getUsername(SettingsActivity.this) + "&unit=" + preferences.getUnit(SettingsActivity.this)
                                 + "&gender=" + preferences.getGender(SettingsActivity.this) + "&bodyweight=" + preferences.getBodyweight(SettingsActivity.this)).get()) {
                             submitElem.getSaveChangesButton().setClickable(false);
-                            submitElem.getSaveChangesButton().setAlpha((float) 0.25);
+                            submitElem.getSaveChangesButton().setAlpha(0.25F);
 
                             Snackbar snackbar = Snackbar
                                     .make(v, "Saved Changes.", Snackbar.LENGTH_LONG);
+                            View view = snackbar.getView();
+                            TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+                            tv.setTextColor(Color.WHITE);
                             snackbar.show();
                         } else {
                             Snackbar snackbar = Snackbar
                                     .make(v, "Saving Changes Failed! Do you have a network connection?", Snackbar.LENGTH_LONG);
+                            View view = snackbar.getView();
+                            TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+                            tv.setTextColor(Color.WHITE);
                             snackbar.show();
                         }
                     } catch (InterruptedException e) {
@@ -124,9 +136,9 @@ public class SettingsActivity extends FormActivity {
         }
 
         submitElem.getSaveChangesButton().setClickable(false);
-        submitElem.getSaveChangesButton().setAlpha((float) 0.25);
+        submitElem.getSaveChangesButton().setAlpha(0.25F);
 
-        if (!(preferences.getLat(SettingsActivity.this) > 0.0) && !(preferences.getLon(SettingsActivity.this) > 0.0)) {
+        if (!(preferences.getLat(SettingsActivity.this) != 6969) && !(preferences.getLon(SettingsActivity.this) != 6969)) {
             mapButton.getAddButton().setText("Set Gym Location");
         } else {
             mapButton.getAddButton().setText(preferences.getLat(SettingsActivity.this) + ", "
@@ -140,12 +152,47 @@ public class SettingsActivity extends FormActivity {
             }
         });
 
+        if (!(preferences.getLat(SettingsActivity.this) == 6969) && !(preferences.getLon(SettingsActivity.this) == 6969)) {
+            logGPSelem.getAddSwitch().setClickable(true);
+            logGPSelem.getAddSwitch().setAlpha(1F);
+        } else {
+            logGPSelem.getAddSwitch().setClickable(false);
+            logGPSelem.getAddSwitch().setAlpha(0.25F);
+        }
+
+        logGPSelem.getAddSwitch().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (logGPSelem.getAddSwitch().isChecked()) {
+                    preferences.setLogGPS(SettingsActivity.this, true);
+
+                    Snackbar snackbar = Snackbar
+                            .make(buttonView, "Log Gym Location Enabled", Snackbar.LENGTH_LONG);
+                    View view = snackbar.getView();
+                    TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+                    tv.setTextColor(Color.WHITE);
+                    snackbar.show();
+                } else {
+                    preferences.setLogGPS(SettingsActivity.this, false);
+
+                    Snackbar snackbar = Snackbar
+                            .make(buttonView, "Log Gym Location Disabled", Snackbar.LENGTH_LONG);
+                    View view = snackbar.getView();
+                    TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+                    tv.setTextColor(Color.WHITE);
+                    snackbar.show();
+                }
+            }
+        });
+
         section1.addElement(unitElem);
         section1.addElement(genderElem);
         section1.addElement(bodyweightElem);
         section1.addElement(submitElem);
-        section1.addElement(mapButton);
+        section2.addElement(mapButton);
+        section2.addElement(logGPSelem);
         getFormController().addSection(section1);
+        getFormController().addSection(section2);
     }
 
     @Override
