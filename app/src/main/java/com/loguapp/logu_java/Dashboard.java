@@ -1,13 +1,16 @@
 package com.loguapp.logu_java;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,16 +20,18 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
+
 import javax.net.ssl.HttpsURLConnection;
 
 public class Dashboard extends AppCompatActivity implements View.OnClickListener {
 
+    static final int DASH_UPDATE_RESULT = 0;
+    static final int STATS_UPDATE_RESULT = 1;
+
     ListView lview;
     ListViewAdapter lviewAdapter;
     private final Prefs preferences = new Prefs();
-
-    static final int DASH_UPDATE_RESULT = 0;
-    static final int STATS_UPDATE_RESULT = 1;
 
     private Boolean shouldUpdateStats = true;
     private String[] statsCache;
@@ -70,7 +75,17 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         if (requestCode == DASH_UPDATE_RESULT) {
             if (resultCode == RESULT_OK) {
                 System.out.println("Passing back intent extras worked");
-                new LiftData().execute();
+
+                try {
+                    if (new LiftData().execute().get().length > 0) {
+                        showSnackOnLog();
+                        shouldUpdateStats = true;
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
                 shouldUpdateStats = true;
             } else {
                 //User didn't log a lift
@@ -140,6 +155,15 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
                 startActivityForResult(i, DASH_UPDATE_RESULT);
             }
         });
+    }
+
+    public void showSnackOnLog() {
+        Snackbar snackbar = Snackbar
+                .make(getCurrentFocus(), "Lift Logged Successfully", Snackbar.LENGTH_LONG);
+        View view = snackbar.getView();
+        TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setTextColor(Color.WHITE);
+        snackbar.show();
     }
 
     public class LiftData extends AsyncTask<Void, Void, JSONObject[]> {

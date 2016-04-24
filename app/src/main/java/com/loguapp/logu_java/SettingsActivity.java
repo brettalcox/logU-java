@@ -206,10 +206,16 @@ public class SettingsActivity extends FormActivity {
 
                 Snackbar snackbar = Snackbar
                         .make(getCurrentFocus(), "Gym Location Saved.", Snackbar.LENGTH_LONG);
+                View view = snackbar.getView();
+                TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+                tv.setTextColor(Color.WHITE);
                 snackbar.show();
             } else {
                 Snackbar snackbar = Snackbar
                         .make(getCurrentFocus(), "Gym Location Not Saved.", Snackbar.LENGTH_LONG);
+                View view = snackbar.getView();
+                TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+                tv.setTextColor(Color.WHITE);
                 snackbar.show();
             }
         }
