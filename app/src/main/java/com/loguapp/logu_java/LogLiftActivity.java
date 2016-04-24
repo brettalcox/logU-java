@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 
 import com.github.dkharrat.nexusdialog.FormActivity;
@@ -29,6 +30,8 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class LogLiftActivity extends FormActivity {
 
+    final Prefs preferences = new Prefs();
+
     @Override protected void initForm() {
         setTitle("Log Lift");
         setContentView(R.layout.form_activity);
@@ -37,8 +40,6 @@ public class LogLiftActivity extends FormActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/yyyy");
 
         final FormSectionController section1 = new FormSectionController(this, "New Lift");
-
-        final Prefs preferences = new Prefs();
 
         section1.addElement(new DatePickerController(this, "date", "Date", true, dateFormat));
         section1.addElement(new SelectionController(this, "lift", "Lift", true, "Select Lift", lifts, true));
@@ -82,6 +83,10 @@ public class LogLiftActivity extends FormActivity {
                                 "&reps=" + getModel().getValue("reps").toString() + "&weight=" + getModel().getValue("weight").toString() +
                                 "&intensity=" + getModel().getValue("intensity").toString() + "&notes=" + getModel().getValue("notes").toString();
                         System.out.println(queryParam);
+
+                        if (preferences.getLogGPS(LogLiftActivity.this)) {
+                            queryParam += queryParam + "&latitude=" + preferences.getLat(LogLiftActivity.this) + "&longitude=" + preferences.getLon(LogLiftActivity.this);
+                        }
                         new LiftData().execute(queryParam);
 
                         Intent intent = new Intent(LogLiftActivity.this, Dashboard.class);
@@ -108,6 +113,10 @@ public class LogLiftActivity extends FormActivity {
 
             try {
                 String url = "https://loguapp.com/swift2.php";
+
+                if (preferences.getLogGPS(LogLiftActivity.this)) {
+                    url = "https://loguapp.com/log_with_gps_coords.php";
+                }
                 URL obj = new URL(url);
                 HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
