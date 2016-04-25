@@ -221,7 +221,7 @@ public class SettingsActivity extends FormActivity {
         }
     }
 
-    public class UserSettings extends AsyncTask<String, Void, Boolean> {
+    protected class UserSettings extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {
 

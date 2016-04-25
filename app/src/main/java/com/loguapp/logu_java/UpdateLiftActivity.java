@@ -137,7 +137,7 @@ public class UpdateLiftActivity extends FormActivity {
         getFormController().addSection(section1);
     }
 
-    public class UpdateLiftData extends AsyncTask<String, Void, Void> {
+    private class UpdateLiftData extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... params) {
 

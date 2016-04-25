@@ -61,7 +61,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         super.onResume();
     }
 
-    public void init() {
+    protected void init() {
         try {
             new LiftData().execute();
         } catch (Exception e) {
@@ -135,11 +135,6 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
             if (resultCode == RESULT_OK) {
                 commCache = data.getStringArrayExtra("commCache");
                 shouldUpdateCommStats = false;
-                System.out.println("I got some goodies: ");
-                for (int i = 0; i < commCache.length; i++) {
-                    System.out.println(commCache[i]);
-                }
-                System.out.println(data.getStringExtra("dung"));
             }
         }
     }
@@ -182,7 +177,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         }
     }
 
-    public void setLviewListener() {
+    protected void setLviewListener() {
         lview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getBaseContext(), UpdateLiftActivity.class);
@@ -198,7 +193,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         });
     }
 
-    public void showSnackOnDash(String param) {
+    protected void showSnackOnDash(String param) {
         Snackbar snackbar = Snackbar
                 .make(getCurrentFocus(), param, Snackbar.LENGTH_LONG);
         View view = snackbar.getView();
@@ -207,7 +202,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
         snackbar.show();
     }
 
-    public class LiftData extends AsyncTask<Void, Void, JSONObject[]> {
+    private class LiftData extends AsyncTask<Void, Void, JSONObject[]> {
         @Override
         protected JSONObject[] doInBackground(Void... params) {
 

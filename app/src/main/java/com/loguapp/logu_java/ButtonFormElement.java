@@ -29,15 +29,15 @@ public class ButtonFormElement extends LabeledFieldController {
         }
     }
 
-    public Button getAddButton() {
+    protected Button getAddButton() {
         return (Button)getView().findViewById(R.id.add_btn);
     }
 
-    public Button getSaveChangesButton() {
+    protected Button getSaveChangesButton() {
         return (Button)getView().findViewById(R.id.submit_btn);
     }
 
-    public Button getUpdateButton() {
+    protected Button getUpdateButton() {
         return (Button)getView().findViewById(R.id.update_btn);
     }
 

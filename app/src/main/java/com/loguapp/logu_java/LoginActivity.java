@@ -62,7 +62,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    public void loginError() {
+    protected void loginError() {
         new AlertDialog.Builder(LoginActivity.this)
                 .setTitle("Login Failed!")
                 .setMessage("Username/Password Incorrect")
@@ -75,7 +75,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 .show();
     }
 
-    public void loginFieldsError() {
+    protected void loginFieldsError() {
         new AlertDialog.Builder(LoginActivity.this)
                 .setTitle("Login Failed!")
                 .setMessage("Fill out both fields.")
@@ -88,7 +88,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 .show();
     }
 
-    public class UserLogin extends AsyncTask<String, Void, String> {
+    private class UserLogin extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
 

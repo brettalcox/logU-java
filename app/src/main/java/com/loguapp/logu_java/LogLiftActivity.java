@@ -105,7 +105,7 @@ public class LogLiftActivity extends FormActivity {
 
     }
 
-    public class LiftData extends AsyncTask<String, Void, Void> {
+    private class LiftData extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... params) {
 

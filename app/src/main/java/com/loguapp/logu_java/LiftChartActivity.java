@@ -88,7 +88,7 @@ public class LiftChartActivity extends Activity {
         mChart.setData(data);
     }
 
-    public class GraphData extends AsyncTask<Void, Void, JSONObject[]> {
+    private class GraphData extends AsyncTask<Void, Void, JSONObject[]> {
         @Override
         protected JSONObject[] doInBackground(Void... params) {
 

@@ -9,7 +9,7 @@ import com.google.maps.android.clustering.ClusterItem;
 public class MapItemCluster implements ClusterItem {
     private final LatLng mPosition;
 
-    public MapItemCluster(double lat, double lng) {
+    protected MapItemCluster(double lat, double lng) {
         mPosition = new LatLng(lat, lng);
     }
 

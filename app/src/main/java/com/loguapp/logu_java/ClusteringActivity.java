@@ -91,7 +91,7 @@ public class ClusteringActivity extends CommunityActivity {
         }
     }
 
-    public class GymMapMarkers extends AsyncTask<String, Void, JSONObject[]> {
+    private class GymMapMarkers extends AsyncTask<String, Void, JSONObject[]> {
         @Override
         protected JSONObject[] doInBackground(String... url) {
 

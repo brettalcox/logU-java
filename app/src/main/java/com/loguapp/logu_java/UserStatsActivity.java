@@ -71,7 +71,7 @@ public class UserStatsActivity extends Activity {
         finish();
     }
 
-    public void init() {
+    protected void init() {
 
         formatChart();
 
@@ -90,7 +90,7 @@ public class UserStatsActivity extends Activity {
         setListViewHeightBasedOnChildren(lview);
     }
 
-    public void setLviewListener() {
+    protected void setLviewListener() {
         lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
@@ -103,7 +103,7 @@ public class UserStatsActivity extends Activity {
         });
     }
 
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
+    protected static void setListViewHeightBasedOnChildren(ListView listView) {
         StaticListViewAdapter listAdapter = (StaticListViewAdapter) listView.getAdapter();
         if (listAdapter == null) {
             // pre-condition
@@ -123,7 +123,7 @@ public class UserStatsActivity extends Activity {
         listView.requestLayout();
     }
 
-    public void formatChart() {
+    protected void formatChart() {
         chart = (RadarChart) findViewById(R.id.chart);
 
         chart.setDescription("");
@@ -148,7 +148,7 @@ public class UserStatsActivity extends Activity {
         yAxis.setDrawLabels(false);
     }
 
-    public void setData(String[] xValues, String[] yValues) {
+    protected void setData(String[] xValues, String[] yValues) {
 
         ArrayList<Entry> yVals1 = new ArrayList<Entry>();
 
@@ -227,7 +227,7 @@ public class UserStatsActivity extends Activity {
         }
     }
 
-    public void useCachedValues(Bundle extras) {
+    protected void useCachedValues(Bundle extras) {
         TextView wilkLabel = (TextView) findViewById(R.id.wilkScoreLabel);
         TextView rankLabel = (TextView) findViewById(R.id.wilksRankLabel);
         TextView liftLabel = (TextView) findViewById(R.id.liftCountLabel);
@@ -261,7 +261,7 @@ public class UserStatsActivity extends Activity {
         }
     }
 
-    public void setTargetedMuscle(JSONObject[] data) {
+    protected void setTargetedMuscle(JSONObject[] data) {
         String[] muscles = new String[data.length];
         String[] values = new String[data.length];
 
@@ -280,7 +280,7 @@ public class UserStatsActivity extends Activity {
         setData(muscles, values);
     }
 
-    public void setWilkScore(JSONObject[] data) {
+    protected void setWilkScore(JSONObject[] data) {
         String[] values = new String[data.length];
 
         for (int i = 0; i < data.length; ++i) {
@@ -295,7 +295,7 @@ public class UserStatsActivity extends Activity {
         wilkLabel.setText(values[0]);
     }
 
-    public void setRepAverage(JSONObject[] data) {
+    protected void setRepAverage(JSONObject[] data) {
         String[] avg_reps = new String[data.length];
         String[] reps = new String[data.length];
         String[] sets = new String[data.length];
@@ -333,7 +333,7 @@ public class UserStatsActivity extends Activity {
         favoriteLift.setText(favLift[0]);
     }
 
-    public void setWilksRank(JSONObject[] data) {
+    protected void setWilksRank(JSONObject[] data) {
         String[] values = new String[data.length];
 
         for (int i = 0; i < data.length; ++i) {
@@ -349,7 +349,7 @@ public class UserStatsActivity extends Activity {
         rankLabel.setText(values[0]);
     }
 
-    public void setAvgFreq(JSONObject[] data) {
+    protected void setAvgFreq(JSONObject[] data) {
         String[] values = new String[data.length];
 
         for (int i = 0; i < data.length; ++i) {
@@ -365,7 +365,7 @@ public class UserStatsActivity extends Activity {
         avgFreqLabel.setText(values[0]);
     }
 
-    public class LiftData extends AsyncTask<String, Void, JSONObject[]> {
+    private class LiftData extends AsyncTask<String, Void, JSONObject[]> {
         @Override
         protected JSONObject[] doInBackground(String... url) {
 

@@ -37,11 +37,11 @@ public class GraphListViewActivity extends Activity {
         init();
     }
 
-    public void init() {
+    protected void init() {
         new LiftNames().execute();
     }
 
-    public void setLviewListener() {
+    protected void setLviewListener() {
         lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getBaseContext(), LiftChartActivity.class);
@@ -51,7 +51,7 @@ public class GraphListViewActivity extends Activity {
         });
     }
 
-    public class LiftNames extends AsyncTask<Void, Void, JSONObject[]> {
+    private class LiftNames extends AsyncTask<Void, Void, JSONObject[]> {
         @Override
         protected JSONObject[] doInBackground(Void... params) {
 

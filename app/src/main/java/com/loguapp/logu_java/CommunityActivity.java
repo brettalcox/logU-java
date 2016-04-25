@@ -79,7 +79,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
         finish();
     }
 
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
+    protected static void setListViewHeightBasedOnChildren(ListView listView) {
         //Resizing listview rows to play nice with the rest of the layout
         StaticListViewAdapter listAdapter = (StaticListViewAdapter) listView.getAdapter();
         if (listAdapter == null) {
@@ -113,7 +113,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
 
     protected abstract void setUpClusterer();
 
-    public void makeNetworkCalls() {
+    protected void makeNetworkCalls() {
         //grab data from server
         try {
             commStats = new CommData().execute("https://loguapp.com/community_stats.php").get();
@@ -125,7 +125,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
         }
     }
 
-    public void setCommStats(JSONObject[] data) {
+    protected void setCommStats(JSONObject[] data) {
         //Use data from http request to set values on screen
         TextView poundage = (TextView) findViewById(R.id.commPoundage);
         TextView totalLifts = (TextView) findViewById(R.id.commLifts);
@@ -148,7 +148,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
         cacheValues(data);
     }
 
-    public void useCachedValues(Bundle extras) {
+    protected void useCachedValues(Bundle extras) {
         //When a user hasn't logged/updated lift/updated settings, use cached values.
         TextView poundage = (TextView) findViewById(R.id.commPoundage);
         TextView totalLifts = (TextView) findViewById(R.id.commLifts);
@@ -156,12 +156,6 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
         TextView totalSets = (TextView) findViewById(R.id.commSets);
         TextView totalReps = (TextView) findViewById(R.id.commReps);
         TextView avgReps = (TextView) findViewById(R.id.commAvg);
-
-        String[] butts = extras.getStringArray("commCache");
-
-        for (int i =0; i < extras.getStringArray("commCache").length; i++) {
-            System.out.println(butts[i]);
-        }
 
         if (extras.getStringArray("commCache") != null) {
             String[] commData = extras.getStringArray("commCache");
@@ -177,7 +171,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
         }
     }
 
-    public void cacheValues(JSONObject[] data) {
+    protected void cacheValues(JSONObject[] data) {
         //caching values to send back in intent
         try {
             commCache[0] = data[0].get("poundage").toString();
@@ -192,7 +186,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
     }
 
     //async class to deal with http requests.
-    public class CommData extends AsyncTask<String, Void, JSONObject[]> {
+    private class CommData extends AsyncTask<String, Void, JSONObject[]> {
         @Override
         protected JSONObject[] doInBackground(String... url) {
 
