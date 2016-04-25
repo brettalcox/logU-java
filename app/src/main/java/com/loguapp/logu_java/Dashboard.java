@@ -28,13 +28,18 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
 
     static final int DASH_UPDATE_RESULT = 0;
     static final int STATS_UPDATE_RESULT = 1;
+    static final int UPDATE_LIFT_RESULT = 5;
+    static final int COMM_UPDATE_RESULT = 6;
 
     ListView lview;
     ListViewAdapter lviewAdapter;
     private final Prefs preferences = new Prefs();
 
     private Boolean shouldUpdateStats = true;
+    private Boolean shouldUpdateCommStats = true;
+
     private String[] statsCache;
+    private String[] commCache;
     private String[] muscleCat;
     private String[] weightedVal;
 
@@ -78,8 +83,9 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
 
                 try {
                     if (new LiftData().execute().get().length > 0) {
-                        showSnackOnLog();
+                        showSnackOnDash("Lift Logged Successfully");
                         shouldUpdateStats = true;
+                        shouldUpdateCommStats = true;
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -87,6 +93,7 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
                     e.printStackTrace();
                 }
                 shouldUpdateStats = true;
+                shouldUpdateCommStats = true;
             } else {
                 //User didn't log a lift
             }
@@ -103,6 +110,38 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
                 System.out.println("Passing back cache didn't work");
             }
         }
+
+        if (requestCode == UPDATE_LIFT_RESULT) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    if (new LiftData().execute().get().length > 0) {
+                        showSnackOnDash("Lift Updated Successfully");
+                        shouldUpdateStats = true;
+                        shouldUpdateCommStats = true;
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                shouldUpdateStats = true;
+                shouldUpdateCommStats = true;
+            } else {
+                //User didn't update lift
+            }
+        }
+
+        if (requestCode == COMM_UPDATE_RESULT) {
+            if (resultCode == RESULT_OK) {
+                commCache = data.getStringArrayExtra("commCache");
+                shouldUpdateCommStats = false;
+                System.out.println("I got some goodies: ");
+                for (int i = 0; i < commCache.length; i++) {
+                    System.out.println(commCache[i]);
+                }
+                System.out.println(data.getStringExtra("dung"));
+            }
+        }
     }
 
     @Override
@@ -112,7 +151,9 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
             case R.id.button: {
                 System.out.println("Community page");
                 Intent i = new Intent(getBaseContext(), ClusteringActivity.class);
-                startActivity(i);
+                i.putExtra("commCache", commCache);
+                i.putExtra("shouldUpdate", shouldUpdateCommStats);
+                startActivityForResult(i, COMM_UPDATE_RESULT);
                 break;
             }
             case R.id.button2: {
@@ -152,14 +193,14 @@ public class Dashboard extends AppCompatActivity implements View.OnClickListener
                 i.putExtra("Intensity", intentIntensity[position]);
                 i.putExtra("Notes", intentNotes[position]);
                 i.putExtra("ID", intentID[position]);
-                startActivityForResult(i, DASH_UPDATE_RESULT);
+                startActivityForResult(i, UPDATE_LIFT_RESULT);
             }
         });
     }
 
-    public void showSnackOnLog() {
+    public void showSnackOnDash(String param) {
         Snackbar snackbar = Snackbar
-                .make(getCurrentFocus(), "Lift Logged Successfully", Snackbar.LENGTH_LONG);
+                .make(getCurrentFocus(), param, Snackbar.LENGTH_LONG);
         View view = snackbar.getView();
         TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
         tv.setTextColor(Color.WHITE);

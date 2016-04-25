@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="---"
-                    android:id="@+id/textView13" />
+                    android:id="@+id/commPoundage" />
             </LinearLayout>
 
             <LinearLayout
@@ -68,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="---"
-                    android:id="@+id/textView17" />
+                    android:id="@+id/commLifts" />
             </LinearLayout>
 
             <LinearLayout
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="---"
-                    android:id="@+id/textView21" />
+                    android:id="@+id/commFav" />
             </LinearLayout>
 
         </LinearLayout>
@@ -121,8 +121,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="---"
-                    android:id="@+id/textView24" />
+                    android:id="@+id/commSets"
+                    android:text="---" />
             </LinearLayout>
 
             <LinearLayout
@@ -144,8 +144,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="---"
-                    android:id="@+id/textView26" />
+                    android:id="@+id/commReps"
+                    android:text="---" />
             </LinearLayout>
 
             <LinearLayout
@@ -167,8 +167,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="None"
-                    android:id="@+id/textView28" />
+                    android:text="---"
+                    android:id="@+id/commAvg" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
