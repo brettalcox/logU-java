@@ -54,12 +54,14 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
             System.out.println("Trying to use cached values");
         }
 
+        //Set up map for pins/cluster
         MapFragment mapFragment = new MapFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.mapView, mapFragment);
         transaction.commit();
         mapFragment.getMapAsync(this);
 
+        //Set up static list (menu options)
         String[] staticList = {"Weekly Poundage Graph", "Weekly Poundage Data", "Targeted Muscle Graph"};
         lview = (ListView) findViewById(R.id.staticCommListView);
         lviewAdapter = new StaticListViewAdapter(CommunityActivity.this, staticList);
@@ -69,6 +71,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
 
     @Override
     public void onBackPressed() {
+        //Sending back cached data
         Intent intent = new Intent(CommunityActivity.this, Dashboard.class);
         intent.putExtra("commCache", commCache);
 
@@ -77,6 +80,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
     }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
+        //Resizing listview rows to play nice with the rest of the layout
         StaticListViewAdapter listAdapter = (StaticListViewAdapter) listView.getAdapter();
         if (listAdapter == null) {
             // pre-condition
@@ -98,6 +102,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
 
     @Override
     public void onMapReady(final GoogleMap map) {
+        //Map is ready for clusters
         mMap = map;
         setUpClusterer();
     }
@@ -109,6 +114,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
     protected abstract void setUpClusterer();
 
     public void makeNetworkCalls() {
+        //grab data from server
         try {
             commStats = new CommData().execute("https://loguapp.com/community_stats.php").get();
             setCommStats(commStats);
@@ -120,6 +126,7 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
     }
 
     public void setCommStats(JSONObject[] data) {
+        //Use data from http request to set values on screen
         TextView poundage = (TextView) findViewById(R.id.commPoundage);
         TextView totalLifts = (TextView) findViewById(R.id.commLifts);
         TextView favLift= (TextView) findViewById(R.id.commFav);
@@ -138,19 +145,11 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
             e.printStackTrace();
         }
 
-        try {
-            commCache[0] = data[0].get("poundage").toString();
-            commCache[1] = data[0].get("total_lifts").toString();
-            commCache[2] = data[0].get("favorite").toString();
-            commCache[3] = data[0].get("total_sets").toString();
-            commCache[4] = data[0].get("total_reps").toString();
-            commCache[5] = data[0].get("average_reps").toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        cacheValues(data);
     }
 
     public void useCachedValues(Bundle extras) {
+        //When a user hasn't logged/updated lift/updated settings, use cached values.
         TextView poundage = (TextView) findViewById(R.id.commPoundage);
         TextView totalLifts = (TextView) findViewById(R.id.commLifts);
         TextView favLift= (TextView) findViewById(R.id.commFav);
@@ -178,6 +177,21 @@ public abstract class CommunityActivity extends FragmentActivity implements OnMa
         }
     }
 
+    public void cacheValues(JSONObject[] data) {
+        //caching values to send back in intent
+        try {
+            commCache[0] = data[0].get("poundage").toString();
+            commCache[1] = data[0].get("total_lifts").toString();
+            commCache[2] = data[0].get("favorite").toString();
+            commCache[3] = data[0].get("total_sets").toString();
+            commCache[4] = data[0].get("total_reps").toString();
+            commCache[5] = data[0].get("average_reps").toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //async class to deal with http requests.
     public class CommData extends AsyncTask<String, Void, JSONObject[]> {
         @Override
         protected JSONObject[] doInBackground(String... url) {
